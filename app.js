@@ -395,7 +395,7 @@ function createCardElement(pattern, index) {
       </div>
       <div class="card-actions">
         <button class="btn-view" onclick="openPreview(${pattern.id})">⚙ Propiedades</button>
-        <button class="btn-secondary" onclick="event.stopPropagation(); openMegaForPattern(${pattern.id})" title="Abrir en MEGA">⬇</button>
+        <button class="btn-secondary" onclick="event.stopPropagation(); downloadPdf(${pattern.id})" title="Descargar PDF">⬇</button>
       </div>
     </div>`;
 
@@ -665,6 +665,19 @@ function openMegaForPattern(id) {
   } else {
     // Mostrar aviso
     alert(`No se encontró enlace de MEGA para ${pattern.designer}.\n\nPuedes agregar el enlace en mega-links.json usando el nombre del diseñador como clave.`);
+  }
+}
+
+// ===== DESCARGAR PDF =====
+function downloadPdf(id) {
+  const pattern = state.patterns.find(p => p.id === id);
+  if (!pattern) return;
+
+  if (pattern.pdf && pattern.pdf.trim() !== '') {
+    // Abrir PDF en nueva pestaña
+    window.open(pattern.pdf, '_blank');
+  } else {
+    alert('No se encontró el archivo PDF para este patrón.');
   }
 }
 
