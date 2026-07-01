@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Biblioteca personal de patrones de tejido - Organiza y busca tus patrones favoritos">
+  <meta name="theme-color" content="#C67B5C">
+  <title>Mis Patrones · Biblioteca de tejido</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧶</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="#" class="logo" onclick="resetAll(); return false;">
+        <div class="logo-icon">🧶</div>
+        <div class="logo-text">
+          <h1>Mis Patrones</h1>
+          <span>Biblioteca de tejido</span>
+        </div>
+      </a>
+
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, diseñador, categoría...">
+      </div>
+
+      <div class="header-actions">
+        <span class="stats-badge" id="totalStats">Cargando...</span>
+        <button class="btn-fav" id="btnFavorites" onclick="toggleFavoritesView()">
+          ❤️ Favoritos <span class="count" id="favCount">0</span>
+        </button>
+      </div>
+
+      <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+    </div>
+  </header>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+      <div class="sidebar-section">
+        <h3>Filtros</h3>
+
+        <div class="filter-group">
+          <label for="designerFilter">Diseñadora / Diseñador</label>
+          <select id="designerFilter" onchange="applyFilters()">
+            <option value="">Todos los diseñadores</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="languageFilter">Idioma</label>
+          <select id="languageFilter" onchange="applyFilters()">
+            <option value="">Todos los idiomas</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="designerSearch">Buscar diseñador</label>
+          <input type="text" id="designerSearch" placeholder="Escribe un nombre..." oninput="filterDesignerOptions()">
+        </div>
+
+        <div class="sidebar-count">
+          Mostrando <strong id="resultCount">0</strong> patrones
+          <button class="btn-clear" onclick="clearAllFilters()">Limpiar filtros</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Categorías</h3>
+        <div class="category-tags" id="categoryTags">
+          <!-- Se generan dinámicamente -->
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Accesos rápidos</h3>
+        <div class="category-tags">
+          <button class="tag green" onclick="toggleFavoritesView()">⭐ Favoritos</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="toolbar">
+        <h2 id="toolbarTitle">Todos los patrones <span id="toolbarCount">(0)</span></h2>
+        <div class="view-options">
+          <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')" title="Vista cuadrícula">⊞</button>
+          <button class="view-btn" id="listViewBtn" onclick="setView('list')" title="Vista lista">☰</button>
+        </div>
+      </div>
+
+      <div class="grid" id="patternsGrid">
+        <!-- Se generan dinámicamente -->
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="icon">🧶</div>
+        <h3>No se encontraron patrones</h3>
+        <p>Prueba con otros filtros o términos de búsqueda</p>
+      </div>
+
+      <div class="skeleton-grid" id="skeletonGrid">
+        <!-- Skeleton loading -->
+      </div>
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>Mi Biblioteca de Patrones · <span id="footerTotal">0</span> patrones · <span id="footerDesigners">0</span> diseñadores</p>
+    <p style="margin-top:0.3rem; font-size:0.72rem;">Colección personal organizada por categoría, diseñador e idioma</p>
+  </footer>
+
+  <!-- MODAL Vista Previa -->
+  <div class="modal-overlay" id="previewModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">📄 Vista previa del patrón</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="placeholder-content" id="modalContent">
+          <div class="icon">📄</div>
+          <h3 id="modalPatternName"></h3>
+          <p id="modalDesigner" style="margin-top:0.5rem; font-size:0.9rem;"></p>
+          <div class="modal-actions" style="margin-top:1.5rem; display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
+            <button class="btn-view" id="modalMegaBtn" onclick="openMegaLink()">🔗 Abrir en MEGA</button>
+            <button class="btn-secondary" onclick="closeModal()">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL Favoritos -->
+  <div class="modal-overlay" id="favoritesModal">
+    <div class="modal modal-favorites">
+      <div class="modal-header">
+        <h3>❤️ Mis Favoritos</h3>
+        <button class="modal-close" onclick="closeFavoritesModal()">✕</button>
+      </div>
+      <div class="modal-body modal-body-favorites">
+        <div id="favoritesList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTON VOLVER ARRIBA -->
+  <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+
+  <script src="app.js"></script>
+</body>
+</html>
