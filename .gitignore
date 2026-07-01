@@ -6,3 +6,8 @@ split_images.py
 images.zip
 images_part*.zip
 README.md
+
+# Google Drive credentials (nunca subir)
+credentials.json
+token.pickle
+token.json

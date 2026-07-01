@@ -673,8 +673,14 @@ function downloadPdf(id) {
   const pattern = state.patterns.find(p => p.id === id);
   if (!pattern) return;
 
+  // Usar link de Google Drive si existe
+  if (pattern.downloadUrl && pattern.downloadUrl.trim() !== '') {
+    window.open(pattern.downloadUrl, '_blank');
+    return;
+  }
+
+  // Fallback: intentar abrir PDF local (solo funciona offline)
   if (pattern.pdf && pattern.pdf.trim() !== '') {
-    // Abrir PDF en nueva pestaña
     window.open(pattern.pdf, '_blank');
   } else {
     alert('No se encontró el archivo PDF para este patrón.');

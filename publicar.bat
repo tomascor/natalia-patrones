@@ -9,14 +9,20 @@ echo ========================================
 echo.
 
 REM Paso 1: Actualizar catalogo e imagenes
-echo [1/2] Escaneando PDFs y extrayendo imagenes...
+echo [1/3] Escaneando PDFs y extrayendo imagenes...
 echo.
 powershell -ExecutionPolicy Bypass -File "%~dp0update.ps1"
 python "%~dp0extract_images.py"
 echo.
 
-REM Paso 2: Subir a GitHub
-echo [2/2] Subiendo a la web...
+REM Paso 2: Sincronizar con Google Drive
+echo [2/3] Sincronizando PDFs con Google Drive...
+echo.
+python "%~dp0google_drive_sync.py"
+echo.
+
+REM Paso 3: Subir a GitHub
+echo [3/3] Subiendo a la web...
 echo.
 cd /d "%~dp0"
 git add .
