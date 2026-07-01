@@ -196,7 +196,8 @@ function applyFilters() {
   state.filteredPatterns = state.patterns.filter(pattern => {
     // Filtro de búsqueda
     if (searchTerm) {
-      const searchable = `${pattern.name} ${pattern.designer} ${pattern.category}`.toLowerCase();
+      const tags = getPatternTags(pattern.id).toLowerCase();
+      const searchable = `${pattern.name} ${pattern.designer} ${pattern.category} ${tags}`.toLowerCase();
       if (!searchable.includes(searchTerm)) return false;
     }
 
@@ -390,7 +391,7 @@ function createCardElement(pattern, index) {
         <span class="badge badge-type">${categoryEmoji} ${pattern.category}</span>
       </div>
       <div class="card-actions">
-        <button class="btn-view" onclick="openPreview(${pattern.id})">👁 Ver patrón</button>
+        <button class="btn-view" onclick="openPreview(${pattern.id})">⚙ Propiedades</button>
         <button class="btn-secondary" onclick="event.stopPropagation(); openMegaForPattern(${pattern.id})" title="Abrir en MEGA">⬇</button>
       </div>
     </div>`;
@@ -528,21 +529,29 @@ function openPreview(id) {
   state.currentPreviewId = id;
 
   document.getElementById('modalPatternName').textContent = formatPatternName(pattern.name);
-  document.getElementById('modalDesigner').textContent = `por ${pattern.designer} · ${pattern.category}`;
+  document.getElementById('modalDesigner').textContent = `por ${pattern.designer}`;
 
-  // Mostrar imagen si existe
-  const modalImage = document.getElementById('modalImage');
-  const modalIcon = document.getElementById('modalIcon');
+  // Cargar propiedades guardadas
+  const props = loadPatternProperties(id);
   
+  // Imagen
+  const modalImage = document.getElementById('modalImage');
   if (pattern.image && pattern.image.trim() !== '') {
     modalImage.src = pattern.image;
     modalImage.alt = formatPatternName(pattern.name);
     modalImage.style.display = 'block';
-    modalIcon.style.display = 'none';
   } else {
     modalImage.style.display = 'none';
-    modalIcon.style.display = 'flex';
   }
+
+  // Categoría
+  document.getElementById('modalCategory').value = props.category || pattern.category;
+
+  // Etiquetas
+  document.getElementById('modalTags').value = props.tags || '';
+
+  // Observaciones
+  document.getElementById('modalNotes').value = props.notes || '';
 
   document.getElementById('previewModal').classList.add('active');
 }
@@ -550,6 +559,51 @@ function openPreview(id) {
 function closeModal() {
   document.getElementById('previewModal').classList.remove('active');
   state.currentPreviewId = null;
+}
+
+// ===== PROPIEDADES DE PATRONES =====
+function loadPatternProperties(id) {
+  try {
+    const saved = localStorage.getItem('misPatrones_properties');
+    const allProps = saved ? JSON.parse(saved) : {};
+    return allProps[id] || {};
+  } catch {
+    return {};
+  }
+}
+
+function savePatternProperties() {
+  if (!state.currentPreviewId) return;
+  
+  const id = state.currentPreviewId;
+  const category = document.getElementById('modalCategory').value;
+  const tags = document.getElementById('modalTags').value;
+  const notes = document.getElementById('modalNotes').value;
+  
+  // Cargar propiedades existentes
+  let allProps = {};
+  try {
+    const saved = localStorage.getItem('misPatrones_properties');
+    allProps = saved ? JSON.parse(saved) : {};
+  } catch {
+    allProps = {};
+  }
+  
+  // Guardar propiedades de este patrón
+  allProps[id] = { category, tags, notes };
+  localStorage.setItem('misPatrones_properties', JSON.stringify(allProps));
+  
+  // Actualizar categoría en el estado
+  const pattern = state.patterns.find(p => p.id === id);
+  if (pattern) {
+    pattern.category = category;
+    applyFilters();
+  }
+}
+
+function getPatternTags(id) {
+  const props = loadPatternProperties(id);
+  return props.tags || '';
 }
 
 // ===== ENLACES MEGA =====

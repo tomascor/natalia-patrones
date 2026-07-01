@@ -114,21 +114,66 @@
     <p style="margin-top:0.3rem; font-size:0.72rem;">Colección personal organizada por categoría, diseñador e idioma</p>
   </footer>
 
-  <!-- MODAL Vista Previa -->
+  <!-- MODAL Propiedades -->
   <div class="modal-overlay" id="previewModal">
-    <div class="modal">
+    <div class="modal modal-properties">
       <div class="modal-header">
-        <h3 id="modalTitle">📄 Vista previa del patrón</h3>
+        <h3 id="modalTitle">⚙ Propiedades del patrón</h3>
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
-      <div class="modal-body">
-        <div class="placeholder-content" id="modalContent">
-          <img id="modalImage" src="" alt="" style="max-width:100%; max-height:70vh; border-radius:8px; display:none;">
-          <div class="icon" id="modalIcon">📄</div>
-          <h3 id="modalPatternName"></h3>
-          <p id="modalDesigner" style="margin-top:0.5rem; font-size:0.9rem;"></p>
-          <div class="modal-actions" style="margin-top:1.5rem; display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
-            <button class="btn-secondary" onclick="closeModal()">Cerrar</button>
+      <div class="modal-body modal-body-properties">
+        <div class="properties-layout">
+          <!-- Columna izquierda: Imagen -->
+          <div class="properties-image">
+            <img id="modalImage" src="" alt="" style="width:100%; border-radius:8px;">
+          </div>
+          
+          <!-- Columna derecha: Propiedades -->
+          <div class="properties-form">
+            <h3 id="modalPatternName" style="margin-bottom:1rem;"></h3>
+            <p id="modalDesigner" style="margin-bottom:1rem; color:#666;"></p>
+            
+            <!-- Categoría -->
+            <div class="property-group">
+              <label>Categoría</label>
+              <select id="modalCategory" onchange="savePatternProperties()">
+                <option value="Sweater">🧶 Sweater</option>
+                <option value="Cardigan">🧥 Cardigan</option>
+                <option value="Chal">🧣 Chal</option>
+                <option value="Shawl">🧣 Shawl</option>
+                <option value="Top">👕 Top</option>
+                <option value="Gorro">🧢 Gorro</option>
+                <option value="Hat">🧢 Hat</option>
+                <option value="Calcetines">🧦 Calcetines</option>
+                <option value="Socks">🧦 Socks</option>
+                <option value="Amigurumi">🧸 Amigurumi</option>
+                <option value="Mitones">🧤 Mitones</option>
+                <option value="Mittens">🧤 Mittens</option>
+                <option value="Bufanda">🧣 Bufanda</option>
+                <option value="Cuello">🧣 Cuello</option>
+                <option value="Cowl">🧣 Cowl</option>
+                <option value="Vestido">👗 Vestido</option>
+                <option value="Pullover">🧶 Pullover</option>
+                <option value="Jersey">🧶 Jersey</option>
+                <option value="Poncho">🧣 Poncho</option>
+                <option value="Vest">🧥 Vest</option>
+                <option value="Bordado">🪡 Bordado</option>
+                <option value="Bolso">👜 Bolso</option>
+                <option value="Otro">📄 Otro</option>
+              </select>
+            </div>
+            
+            <!-- Etiquetas -->
+            <div class="property-group">
+              <label>Etiquetas (separadas por coma)</label>
+              <input type="text" id="modalTags" placeholder="ej: verano, algodón, fácil" onchange="savePatternProperties()">
+            </div>
+            
+            <!-- Observaciones -->
+            <div class="property-group">
+              <label>Observaciones</label>
+              <textarea id="modalNotes" rows="4" placeholder="Escribe aquí tus notas..." onchange="savePatternProperties()"></textarea>
+            </div>
           </div>
         </div>
       </div>
