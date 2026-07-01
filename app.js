@@ -566,7 +566,7 @@ function loadPatternProperties(id) {
   try {
     const saved = localStorage.getItem('misPatrones_properties');
     const allProps = saved ? JSON.parse(saved) : {};
-    return allProps[id] || {};
+    return allProps[String(id)] || {};
   } catch {
     return {};
   }
@@ -575,7 +575,7 @@ function loadPatternProperties(id) {
 function savePatternProperties() {
   if (!state.currentPreviewId) return;
   
-  const id = state.currentPreviewId;
+  const id = String(state.currentPreviewId);
   const category = document.getElementById('modalCategory').value;
   const tags = document.getElementById('modalTags').value;
   const notes = document.getElementById('modalNotes').value;
@@ -594,7 +594,7 @@ function savePatternProperties() {
   localStorage.setItem('misPatrones_properties', JSON.stringify(allProps));
   
   // Actualizar categoría en el estado
-  const pattern = state.patterns.find(p => p.id === id);
+  const pattern = state.patterns.find(p => p.id === state.currentPreviewId);
   if (pattern) {
     pattern.category = category;
     applyFilters();
@@ -602,7 +602,7 @@ function savePatternProperties() {
 }
 
 function getPatternTags(id) {
-  const props = loadPatternProperties(id);
+  const props = loadPatternProperties(String(id));
   return props.tags || '';
 }
 
