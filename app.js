@@ -164,17 +164,6 @@ function populateFilters() {
     designerSelect.appendChild(option);
   });
 
-  // Idiomas únicos
-  const languages = [...new Set(state.patterns.map(p => p.language))].sort();
-  const languageSelect = document.getElementById('languageFilter');
-  languages.forEach(lang => {
-    const count = state.patterns.filter(p => p.language === lang).length;
-    const option = document.createElement('option');
-    option.value = lang;
-    option.textContent = `${LANGUAGE_FLAGS[lang] || ''} ${LANGUAGE_NAMES[lang] || lang} (${count})`;
-    languageSelect.appendChild(option);
-  });
-
   // Categorías únicas (ordenadas por cantidad)
   const categoryCounts = {};
   state.patterns.forEach(p => {
@@ -202,7 +191,6 @@ function populateFilters() {
 function applyFilters() {
   const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
   const designerFilter = document.getElementById('designerFilter').value;
-  const languageFilter = document.getElementById('languageFilter').value;
   const category = state.selectedCategory;
 
   state.filteredPatterns = state.patterns.filter(pattern => {
@@ -214,9 +202,6 @@ function applyFilters() {
 
     // Filtro de diseñador
     if (designerFilter && pattern.designer !== designerFilter) return false;
-
-    // Filtro de idioma
-    if (languageFilter && pattern.language !== languageFilter) return false;
 
     // Filtro de categoría
     if (category && pattern.category !== category) return false;
@@ -253,7 +238,6 @@ function selectCategory(category) {
 function clearAllFilters() {
   document.getElementById('searchInput').value = '';
   document.getElementById('designerFilter').value = '';
-  document.getElementById('languageFilter').value = '';
   document.getElementById('designerSearch').value = '';
   state.selectedCategory = '';
   state.showFavoritesOnly = false;
@@ -362,8 +346,6 @@ function createCardElement(pattern, index) {
 
   const isFavorite = state.favorites.includes(pattern.id);
   const categoryEmoji = CATEGORY_EMOJIS[pattern.category] || '📄';
-  const langFlag = LANGUAGE_FLAGS[pattern.language] || '';
-  const langName = LANGUAGE_NAMES[pattern.language] || pattern.language;
 
   // Nombre formateado para mostrar
   const displayName = formatPatternName(pattern.name);
@@ -395,7 +377,6 @@ function createCardElement(pattern, index) {
       ${imageContent}
       <span class="placeholder-icon" style="${placeholderStyle}">🧶</span>
       <span class="pdf-badge">PDF</span>
-      <span class="lang-badge">${langFlag} ${pattern.language}</span>
       <button class="card-fav ${isFavorite ? 'liked' : ''}"
               onclick="event.stopPropagation(); toggleFavorite(${pattern.id})"
               title="${isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
@@ -407,7 +388,6 @@ function createCardElement(pattern, index) {
       <div class="card-designer">por ${highlightedDesigner}</div>
       <div class="card-badges">
         <span class="badge badge-type">${categoryEmoji} ${pattern.category}</span>
-        <span class="badge badge-lang">${langFlag} ${langName}</span>
       </div>
       <div class="card-actions">
         <button class="btn-view" onclick="openPreview(${pattern.id})">👁 Ver patrón</button>

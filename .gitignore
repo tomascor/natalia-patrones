@@ -3,7 +3,6 @@ update.ps1
 extract_images.py
 update_data_with_images.py
 split_images.py
-actualizar.bat
 images.zip
 images_part*.zip
 README.md
