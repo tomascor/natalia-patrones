@@ -528,7 +528,21 @@ function openPreview(id) {
   state.currentPreviewId = id;
 
   document.getElementById('modalPatternName').textContent = formatPatternName(pattern.name);
-  document.getElementById('modalDesigner').textContent = `por ${pattern.designer} · ${pattern.category} · ${pattern.language}`;
+  document.getElementById('modalDesigner').textContent = `por ${pattern.designer} · ${pattern.category}`;
+
+  // Mostrar imagen si existe
+  const modalImage = document.getElementById('modalImage');
+  const modalIcon = document.getElementById('modalIcon');
+  
+  if (pattern.image && pattern.image.trim() !== '') {
+    modalImage.src = pattern.image;
+    modalImage.alt = formatPatternName(pattern.name);
+    modalImage.style.display = 'block';
+    modalIcon.style.display = 'none';
+  } else {
+    modalImage.style.display = 'none';
+    modalIcon.style.display = 'flex';
+  }
 
   document.getElementById('previewModal').classList.add('active');
 }
