@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Biblioteca de Patrones - Mockup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-primary: #F5F0EB;
+      --bg-card: #FFFDF9;
+      --text-primary: #3D2B1F;
+      --text-secondary: #7A5C47;
+      --accent: #C67B5C;
+      --accent-hover: #B56A4B;
+      --accent-green: #8B9A6B;
+      --border: #DDD5CA;
+      --shadow: rgba(61, 43, 31, 0.08);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .logo-text h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .logo-text span {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .search-bar {
+      flex: 1;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: border-color 0.2s;
+    }
+
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .search-bar input::placeholder { color: #B0A599; }
+
+    .search-bar .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-fav {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: transparent;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .btn-fav:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-fav .count {
+      background: var(--accent);
+      color: white;
+      padding: 0.1rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .stats-badge {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    /* ===== LAYOUT ===== */
+    .layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 260px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-section {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .sidebar-section h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .filter-group { margin-bottom: 1rem; }
+    .filter-group:last-child { margin-bottom: 0; }
+
+    .filter-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: var(--text-primary);
+    }
+
+    .filter-group select, .filter-group input[type="text"] {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .filter-group select:focus, .filter-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .category-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tag {
+      padding: 0.35rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .tag:hover, .tag.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .tag.green:hover, .tag.green.active {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+
+    .sidebar-count {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-clear {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+    }
+
+    .btn-clear:hover { text-decoration: underline; }
+
+    /* ===== MAIN CONTENT ===== */
+    .main { flex: 1; min-width: 0; }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .toolbar h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .toolbar h2 span {
+      color: var(--accent);
+    }
+
+    .view-options {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .view-btn {
+      width: 36px;
+      height: 36px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .view-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* ===== GRID ===== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #E8DED4 0%, #D4C8BC 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-image .placeholder-icon {
+      font-size: 3rem;
+      opacity: 0.3;
+    }
+
+    .card-image .pdf-badge {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      background: rgba(61, 43, 31, 0.75);
+      color: white;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
+
+    .card-image .lang-badge {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: var(--accent-green);
+      color: white;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .card-fav {
+      position: absolute;
+      bottom: 0.75rem;
+      right: 0.75rem;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s;
+      backdrop-filter: blur(4px);
+    }
+
+    .card-fav:hover { background: white; transform: scale(1.1); }
+    .card-fav.liked { color: #E25555; }
+
+    .card-body { padding: 1rem; }
+
+    .card-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-designer {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.6rem;
+    }
+
+    .card-badges {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+
+    .badge {
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .badge-type {
+      background: #F0E6DB;
+      color: var(--text-secondary);
+    }
+
+    .badge-lang {
+      background: #E5EDDB;
+      color: #5A6B45;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-view {
+      flex: 1;
+      padding: 0.55rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-view:hover { background: var(--accent-hover); }
+
+    .btn-secondary {
+      padding: 0.55rem 0.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+    .empty-state h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .sidebar { width: 220px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+    }
+
+    @media (max-width: 768px) {
+      .header-inner { flex-wrap: wrap; }
+      .search-bar { max-width: 100%; order: 3; }
+      .layout { flex-direction: column; padding: 1rem; }
+      .sidebar { width: 100%; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
+      .card-image { height: 160px; }
+    }
+
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+      .card-body { padding: 0.75rem; }
+      .card-title { font-size: 0.82rem; }
+      .header { padding: 0.75rem 1rem; }
+    }
+
+    /* ===== MODAL (Vista previa) ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(61, 43, 31, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h3 { font-size: 1rem; }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: var(--bg-primary);
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-body {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #E8DED4;
+      min-height: 400px;
+    }
+
+    .modal-body .placeholder-content {
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .modal-body .placeholder-content .icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.3; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <div class="logo-icon">🧶</div>
+        <div class="logo-text">
+          <h1>Mis Patrones</h1>
+          <span>Biblioteca personal de tejido</span>
+        </div>
+      </a>
+
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Buscar por nombre, diseñador, tipo de prenda...">
+      </div>
+
+      <div class="header-actions">
+        <span class="stats-badge">454 patrones</span>
+        <button class="btn-fav">
+          ❤️ Favoritos <span class="count">12</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Filtros</h3>
+
+        <div class="filter-group">
+          <label>Diseñadora / Diseñador</label>
+          <select>
+            <option>Todos los diseñadores</option>
+            <option>Isabell Kraemer (62)</option>
+            <option>Belén Fernández (31)</option>
+            <option>Joji Locatelli (25)</option>
+            <option>PetiteKnit (21)</option>
+            <option>Lucía Ruiz de Aguirre (21)</option>
+            <option>Stephen West (17)</option>
+            <option>Claudia Quintanilla (19)</option>
+            <option>Susanne Müller (14)</option>
+            <option>Juana Roman (16)</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Idioma</label>
+          <select>
+            <option>Todos los idiomas</option>
+            <option>🇪🇸 Español</option>
+            <option>🇬🇧 Inglés</option>
+            <option>🇵🇹 Portugués</option>
+            <option>🇩🇪 Alemán</option>
+            <option>🇫🇷 Francés</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Buscar diseñador</label>
+          <input type="text" placeholder="Escribe un nombre...">
+        </div>
+
+        <div class="sidebar-count">
+          Mostrando <strong>454</strong> patrones
+          <button class="btn-clear" style="float:right">Limpiar filtros</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Categorías</h3>
+        <div class="category-tags">
+          <button class="tag active">Todos</button>
+          <button class="tag">Sweaters</button>
+          <button class="tag">Chals</button>
+          <button class="tag">Calcetines</button>
+          <button class="tag">Tops</button>
+          <button class="tag">Gorros</button>
+          <button class="tag green">Amigurumi</button>
+          <button class="tag">Cardigans</button>
+          <button class="tag">Mitones</button>
+          <button class="tag">Bolsos</button>
+          <button class="tag">Bordado</button>
+          <button class="tag">Otros</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Accesos rápidos</h3>
+        <div class="category-tags">
+          <button class="tag green">⭐ Favoritos</button>
+          <button class="tag">🕐 Recientes</button>
+          <button class="tag">📖 En progreso</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="toolbar">
+        <h2>Todos los patrones <span>(454)</span></h2>
+        <div class="view-options">
+          <button class="view-btn active" title="Vista cuadrícula">⊞</button>
+          <button class="view-btn" title="Vista lista">☰</button>
+        </div>
+      </div>
+
+      <div class="grid">
+
+        <!-- Card 1 -->
+        <div class="card">
+          <div class="card-image">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">ES</span>
+            <button class="card-fav">🤍</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Flax Sweater</div>
+            <div class="card-designer">por Isabell Kraemer</div>
+            <div class="card-badges">
+              <span class="badge badge-type">🧶 Sweater</span>
+              <span class="badge badge-lang">🇪🇸 Español</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #D4C8BC 0%, #C4B8AC 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">ES</span>
+            <button class="card-fav liked">❤️</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Sororidad Shawl</div>
+            <div class="card-designer">por Aitana Villa</div>
+            <div class="card-badges">
+              <span class="badge badge-type">🧣 Chal</span>
+              <span class="badge badge-lang">🇪🇸 Español</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #E0D6CC 0%, #D0C6BC 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">EN</span>
+            <button class="card-fav">🤍</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Monday Sweater</div>
+            <div class="card-designer">por PetiteKnit</div>
+            <div class="card-badges">
+              <span class="badge badge-type">🧶 Sweater</span>
+              <span class="badge badge-lang">🇬🇧 Inglés</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #D8CEC4 0%, #C8BEB4 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">ES</span>
+            <button class="card-fav">🤍</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Sagrada Familia Shawl</div>
+            <div class="card-designer">por Aitana Villa</div>
+            <div class="card-badges">
+              <span class="badge badge-type">🧣 Chal</span>
+              <span class="badge badge-lang">🇪🇸 Español</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #E4DCD3 0%, #D4CCC3 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">ES</span>
+            <button class="card-fav liked">❤️</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Top Pirita</div>
+            <div class="card-designer">por Lucía Ruiz de Aguirre</div>
+            <div class="card-badges">
+              <span class="badge badge-type">👕 Top</span>
+              <span class="badge badge-lang">🇪🇸 Español</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #DCD2C8 0%, #CCC2B8 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">ES</span>
+            <button class="card-fav">🤍</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Vanilla Socks</div>
+            <div class="card-designer">por Susanne Müller</div>
+            <div class="card-badges">
+              <span class="badge badge-type">🧦 Calcetines</span>
+              <span class="badge badge-lang">🇪🇸 Español</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #E2D8CE 0%, #D2C8BE 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">ES</span>
+            <button class="card-fav">🤍</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Gorrio Beanie</div>
+            <div class="card-designer">por Juana Roman</div>
+            <div class="card-badges">
+              <span class="badge badge-type">🧢 Gorro</span>
+              <span class="badge badge-lang">🇪🇸 Español</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 8 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #D6CCC2 0%, #C6BCB2 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">ES</span>
+            <button class="card-fav liked">❤️</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Amigurumi Oso</div>
+            <div class="card-designer">por Pica Pau</div>
+            <div class="card-badges">
+              <span class="badge badge-type">🧸 Amigurumi</span>
+              <span class="badge badge-lang">🇪🇸 Español</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 9 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #DED4CA 0%, #CEC4BA 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">EN</span>
+            <button class="card-fav">🤍</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">The Dotted Pearls Mittens</div>
+            <div class="card-designer">por Stephen West</div>
+            <div class="card-badges">
+              <span class="badge badge-type">🧤 Mitones</span>
+              <span class="badge badge-lang">🇬🇧 Inglés</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 10 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #E0D6CC 0%, #D0C6BC 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">ES</span>
+            <button class="card-fav">🤍</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Bolso Tejido</div>
+            <div class="card-designer">por Belén Fernández</div>
+            <div class="card-badges">
+              <span class="badge badge-type">👜 Bolso</span>
+              <span class="badge badge-lang">🇪🇸 Español</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 11 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #DAD0C6 0%, #CAC0B6 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">ES</span>
+            <button class="card-fav">🤍</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Cardigan Cosido</div>
+            <div class="card-designer">por The Sewing Box</div>
+            <div class="card-badges">
+              <span class="badge badge-type">🧥 Cardigan</span>
+              <span class="badge badge-lang">🇪🇸 Español</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 12 -->
+        <div class="card">
+          <div class="card-image" style="background: linear-gradient(135deg, #E6DCD2 0%, #D6CCC2 100%);">
+            <span class="placeholder-icon">📄</span>
+            <span class="pdf-badge">PDF</span>
+            <span class="lang-badge">ES</span>
+            <button class="card-fav liked">❤️</button>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Bordado Cupcake Lavanda</div>
+            <div class="card-designer">por Alexandra E.</div>
+            <div class="card-badges">
+              <span class="badge badge-type">🪡 Bordado</span>
+              <span class="badge badge-lang">🇪🇸 Español</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-view" onclick="openModal()">👁 Vista previa</button>
+              <button class="btn-secondary">⬇</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>Mi Biblioteca de Patrones · 454 patrones · 100+ diseñadores</p>
+    <p style="margin-top:0.3rem; font-size:0.72rem;">Colección personal organizada por categoría, diseñador e idioma</p>
+  </footer>
+
+  <!-- MODAL Vista Previa -->
+  <div class="modal-overlay" id="previewModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📄 Vista previa del patrón</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="placeholder-content">
+          <div class="icon">📄</div>
+          <h3>Vista previa del PDF</h3>
+          <p style="margin-top:0.5rem; font-size:0.9rem;">Aquí se embebería el PDF con PDF.js</p>
+          <p style="margin-top:0.25rem; font-size:0.8rem; opacity:0.7;">El patrón se mostraría directamente en el navegador</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('previewModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('previewModal').classList.remove('active');
+    }
+
+    document.getElementById('previewModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Toggle fav
+    document.querySelectorAll('.card-fav').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (this.textContent.trim() === '🤍') {
+          this.textContent = '❤️';
+          this.classList.add('liked');
+        } else {
+          this.textContent = '🤍';
+          this.classList.remove('liked');
+        }
+      });
+    });
+
+    // Category tags
+    document.querySelectorAll('.tag').forEach(tag => {
+      tag.addEventListener('click', function() {
+        if (this.textContent.includes('Todos') || this.textContent.includes('Favoritos') || this.textContent.includes('Recientes') || this.textContent.includes('progreso')) {
+          return;
+        }
+        this.classList.toggle('active');
+      });
+    });
+  </script>
+
+</body>
+</html>
