@@ -91,6 +91,9 @@ async function init() {
   // Cargar datos
   await Promise.all([loadPatterns(), loadMegaLinks]);
 
+  // Aplicar propiedades guardadas (categoría, etiquetas, notas)
+  applySavedProperties();
+
   // Poblar filtros
   populateFilters();
 
@@ -563,6 +566,17 @@ function closeModal() {
 
 // ===== PROPIEDADES DE PATRONES =====
 function loadPatternProperties(id) {
+  // Primero buscar en el estado (propiedades aplicadas)
+  const pattern = state.patterns.find(p => p.id === Number(id));
+  if (pattern && (pattern.tags || pattern.notes)) {
+    return {
+      category: pattern.category,
+      tags: pattern.tags || '',
+      notes: pattern.notes || ''
+    };
+  }
+  
+  // Si no, buscar en localStorage
   try {
     const saved = localStorage.getItem('misPatrones_properties');
     const allProps = saved ? JSON.parse(saved) : {};
@@ -604,6 +618,29 @@ function savePatternProperties() {
 function getPatternTags(id) {
   const props = loadPatternProperties(String(id));
   return props.tags || '';
+}
+
+// ===== APLICAR PROPIEDADES GUARDADAS =====
+function applySavedProperties() {
+  try {
+    const saved = localStorage.getItem('misPatrones_properties');
+    const allProps = saved ? JSON.parse(saved) : {};
+    
+    state.patterns.forEach(pattern => {
+      const props = allProps[String(pattern.id)];
+      if (props) {
+        // Aplicar categoría guardada
+        if (props.category) {
+          pattern.category = props.category;
+        }
+        // Guardar etiquetas y notas en el patrón para búsqueda
+        pattern.tags = props.tags || '';
+        pattern.notes = props.notes || '';
+      }
+    });
+  } catch {
+    // Si hay error, continuar con los datos originales
+  }
 }
 
 // ===== ENLACES MEGA =====
