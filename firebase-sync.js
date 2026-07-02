@@ -24,11 +24,11 @@ function initFirebase() {
         document.head.appendChild(script2);
 
         script2.onload = function() {
-          firebase.initializeApp(firebaseConfig);
-          db = firebase.firestore();
-          firebaseReady = true;
-          console.log('Firebase OK');
-          resolve(true);
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        firebaseReady = true;
+        console.log('Firebase SDK listo');
+        resolve(true);
         };
       };
 
