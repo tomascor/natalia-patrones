@@ -31,6 +31,6 @@ echo ========================================
 echo   LISTO! Tu web se actualiza en 1-2 min
 echo ========================================
 echo.
-echo Web: https://tomascor.github.io/natalia-patrones/
+echo Web: https://natalia-punto.netlify.app/
 echo.
 pause

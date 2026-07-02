@@ -31,11 +31,11 @@ echo ========================================
 echo   LISTO! Tu web se actualiza en 1-2 min
 echo ========================================
 echo.
-echo Web: https://tomascor.github.io/natalia-patrones/
+echo Web: https://natalia-punto.netlify.app/
 echo.
 pause
 """
 
 with open("D:/Natalia/web/publicar.bat", "wb") as f:
     f.write(content.encode("ascii"))
-print("OK - saved without BOM")
+print("OK")
