@@ -2,9 +2,8 @@
 // Sincronización de datos con Firebase Firestore
 
 let db = null;
-const SHARED_DOC = 'shared-data'; // Documento compartido para todos los dispositivos
+const SHARED_DOC = 'shared-data';
 
-// Inicializar Firebase
 function initFirebase() {
   if (typeof firebaseConfig === 'undefined' || firebaseConfig.apiKey === 'TU_API_KEY') {
     console.log('Firebase no configurado, usando solo localStorage');
@@ -12,7 +11,6 @@ function initFirebase() {
   }
 
   try {
-    // Cargar scripts de Firebase dinámicamente
     const script1 = document.createElement('script');
     script1.src = 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js';
     document.head.appendChild(script1);
@@ -25,19 +23,19 @@ function initFirebase() {
       script2.onload = function() {
         firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
-        console.log('Firebase inicializado. Sincronizando...');
+        console.log('Firebase OK');
         syncFromFirebase();
       };
     };
 
     return true;
   } catch (error) {
-    console.error('Error inicializando Firebase:', error);
+    console.error('Error Firebase:', error);
     return false;
   }
 }
 
-// Sincronizar DESDE Firebase (cargar)
+// Cargar datos DESDE Firebase solo al iniciar
 async function syncFromFirebase() {
   if (!db) return;
 
@@ -46,13 +44,12 @@ async function syncFromFirebase() {
     if (doc.exists) {
       const data = doc.data();
 
-      // Cargar datos locales
       const localProps = JSON.parse(localStorage.getItem('misPatrones_properties') || '{}');
       const localFavs = JSON.parse(localStorage.getItem('misPatrones_favorites') || '[]');
       const localCats = JSON.parse(localStorage.getItem('misPatrones_customCategories') || '[]');
       const localDeleted = JSON.parse(localStorage.getItem('misPatrones_deletedDefaults') || '[]');
 
-      // Merge: para cada patrón, preferir valores no vacíos
+      // Merge: para cada patrón, preferir el que tenga datos
       const mergedProps = {};
       const allIds = new Set([...Object.keys(data.properties || {}), ...Object.keys(localProps)]);
       allIds.forEach(id => {
@@ -65,31 +62,23 @@ async function syncFromFirebase() {
         };
       });
 
-      // Para favoritos, unir ambas listas
       const mergedFavs = [...new Set([...(data.favorites || []), ...localFavs])];
       const mergedCats = (data.customCategories && data.customCategories.length > 0) ? data.customCategories : localCats;
       const mergedDeleted = (data.deletedDefaults && data.deletedDefaults.length > 0) ? data.deletedDefaults : localDeleted;
 
-      // Guardar merge en localStorage
       localStorage.setItem('misPatrones_properties', JSON.stringify(mergedProps));
       localStorage.setItem('misPatrones_favorites', JSON.stringify(mergedFavs));
       localStorage.setItem('misPatrones_customCategories', JSON.stringify(mergedCats));
       localStorage.setItem('misPatrones_deletedDefaults', JSON.stringify(mergedDeleted));
 
-      // Guardar merge de vuelta a Firebase
-      await syncToFirebase();
-
-      console.log('Datos sincronizados desde Firebase');
-    } else {
-      // Primera vez: guardar datos locales en Firebase
-      await syncToFirebase();
+      console.log('Datos cargados desde Firebase');
     }
   } catch (error) {
-    console.error('Error leyendo de Firebase:', error);
+    console.error('Error leyendo Firebase:', error);
   }
 }
 
-// Sincronizar HACIA Firebase (guardar)
+// Guardar HACIA Firebase (solo cuando el usuario guarda)
 async function syncToFirebase() {
   if (!db) return;
 
@@ -103,8 +92,8 @@ async function syncToFirebase() {
     };
 
     await db.collection('app').doc(SHARED_DOC).set(data);
-    console.log('Datos guardados en Firebase');
+    console.log('Guardado en Firebase');
   } catch (error) {
-    console.error('Error guardando en Firebase:', error);
+    console.error('Error guardando Firebase:', error);
   }
 }
