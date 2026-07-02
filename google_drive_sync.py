@@ -182,11 +182,14 @@ def update_data_json():
         data = json.load(f)
     
     updated = 0
-    for pattern in data:
+    for pattern in data['patterns']:
         pdf_path = pattern.get('pdf', '')
-        if pdf_path and pdf_path in drive_links:
-            pattern['downloadUrl'] = drive_links[pdf_path]['url']
-            updated += 1
+        if pdf_path:
+            # Quitar prefijo "pdfs/" para buscar en drive_links
+            key = pdf_path.replace('pdfs/', '', 1) if pdf_path.startswith('pdfs/') else pdf_path
+            if key in drive_links:
+                pattern['downloadUrl'] = drive_links[key]['url']
+                updated += 1
     
     with open(data_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
