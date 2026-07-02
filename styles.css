@@ -1380,6 +1380,29 @@ button {
   text-decoration: underline;
 }
 
+.property-delete {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.btn-delete-pattern {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1.5px solid #E25555;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: #E25555;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.btn-delete-pattern:hover {
+  background: #E25555;
+  color: white;
+}
+
 /* ===== MODAL SELECTOR DE ICONOS ===== */
 .modal-icon-picker {
   max-width: 480px;

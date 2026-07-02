@@ -614,6 +614,45 @@ function closeModal() {
   state.currentPreviewId = null;
 }
 
+// ===== BORRAR DISEÑO =====
+function deletePattern() {
+  if (!state.currentPreviewId) return;
+  
+  const pattern = state.patterns.find(p => p.id === state.currentPreviewId);
+  if (!pattern) return;
+  
+  const confirm1 = confirm(`¿Borrar "${pattern.name}" de ${pattern.designer}?\n\nEsto eliminará el archivo PDF y la imagen de tu PC.`);
+  if (!confirm1) return;
+  
+  const confirm2 = confirm(`¿Estás seguro? Esta acción no se puede deshacer.`);
+  if (!confirm2) return;
+  
+  // Agregar a la lista de borrados pendientes
+  let pending = [];
+  try {
+    pending = JSON.parse(localStorage.getItem('misPatrones_pendingDeletions') || '[]');
+  } catch {}
+  
+  if (!pending.includes(pattern.id)) {
+    pending.push(pattern.id);
+    localStorage.setItem('misPatrones_pendingDeletions', JSON.stringify(pending));
+  }
+  
+  // Quitar de la vista inmediatamente
+  state.patterns = state.patterns.filter(p => p.id !== state.currentPreviewId);
+  
+  // Quitar de favoritos si está
+  state.favorites = state.favorites.filter(id => id !== state.currentPreviewId);
+  saveFavorites();
+  updateFavCount();
+  
+  closeModal();
+  applyFilters();
+  populateFilters();
+  
+  alert(`"${pattern.name}" marcado para borrado.\n\nEjecuta publicar.bat para eliminar los archivos de tu PC.`);
+}
+
 // ===== PROPIEDADES DE PATRONES =====
 function loadPatternProperties(id) {
   // Primero buscar en el estado (propiedades aplicadas)
