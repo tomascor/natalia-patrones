@@ -469,18 +469,18 @@ function toggleFavorite(id) {
   saveFavorites();
   updateFavCount();
 
-  // Re-renderizar si estamos en modo favoritos o si la tarjeta es visible
+  // Actualizar solo el botón de favorito clickeado
+  document.querySelectorAll('.card-fav').forEach(btn => {
+    if (btn.getAttribute('onclick').includes(`toggleFavorite(${id})`)) {
+      const isLiked = state.favorites.includes(id);
+      btn.classList.toggle('liked', isLiked);
+      btn.innerHTML = isLiked ? '❤️' : '🤍';
+      btn.title = isLiked ? 'Quitar de favoritos' : 'Agregar a favoritos';
+    }
+  });
+
   if (state.showFavoritesOnly) {
     applyFilters();
-  } else {
-    // Solo actualizar los botones de favorito visibles
-    document.querySelectorAll('.card-fav').forEach(btn => {
-      const card = btn.closest('.card');
-      if (card) {
-        // Re-renderizar para mantener consistencia
-        renderPatterns();
-      }
-    });
   }
 }
 
