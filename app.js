@@ -1185,3 +1185,66 @@ function selectIcon(icon) {
   document.getElementById('catIconPreview').textContent = icon;
   closeIconPicker();
 }
+
+// ===== EXPORTAR/IMPORTAR DATOS =====
+function exportAllData() {
+  const data = {
+    properties: JSON.parse(localStorage.getItem('misPatrones_properties') || '{}'),
+    favorites: JSON.parse(localStorage.getItem('misPatrones_favorites') || '[]'),
+    customCategories: JSON.parse(localStorage.getItem('misPatrones_customCategories') || '[]'),
+    deletedDefaults: JSON.parse(localStorage.getItem('misPatrones_deletedDefaults') || '[]'),
+    exportDate: new Date().toISOString()
+  };
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'mis_patrones_datos.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  alert('Datos exportados.\n\nGuárdalo en un lugar seguro. Puedes importarlo en otro dispositivo.');
+}
+
+function importAllData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      
+      if (!data.properties && !data.favorites) {
+        alert('El archivo no parece ser un archivo de datos válido.');
+        return;
+      }
+      
+      const confirm1 = confirm(`Importar datos del ${data.exportDate ? new Date(data.exportDate).toLocaleString() : 'fecha desconocida'}?\n\nEsto REEMPLAZARÁ tus datos actuales.`);
+      if (!confirm1) return;
+      
+      if (data.properties) {
+        localStorage.setItem('misPatrones_properties', JSON.stringify(data.properties));
+      }
+      if (data.favorites) {
+        localStorage.setItem('misPatrones_favorites', JSON.stringify(data.favorites));
+      }
+      if (data.customCategories) {
+        localStorage.setItem('misPatrones_customCategories', JSON.stringify(data.customCategories));
+      }
+      if (data.deletedDefaults) {
+        localStorage.setItem('misPatrones_deletedDefaults', JSON.stringify(data.deletedDefaults));
+      }
+      
+      alert('Datos importados correctamente.\n\nRecarga la página para ver los cambios.');
+      location.reload();
+    } catch (err) {
+      alert('Error al leer el archivo: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
