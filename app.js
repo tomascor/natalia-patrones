@@ -82,6 +82,11 @@ const LANGUAGE_NAMES = {
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
+  // Inicializar Firebase si está configurado
+  if (typeof initFirebase === 'function') {
+    initFirebase();
+  }
+
   // Cargar favoritos de localStorage
   loadFavorites();
 
@@ -484,6 +489,9 @@ function loadFavorites() {
 
 function saveFavorites() {
   localStorage.setItem('misPatrones_favorites', JSON.stringify(state.favorites));
+  if (typeof syncToFirebase === 'function') {
+    syncToFirebase();
+  }
 }
 
 function toggleFavorite(id) {
@@ -739,6 +747,11 @@ function savePatternProperties() {
     pattern.notes = notes;
     applyFilters();
   }
+  
+  // Sincronizar con Firebase si está disponible
+  if (typeof syncToFirebase === 'function') {
+    syncToFirebase();
+  }
 }
 
 function showSaveConfirmation() {
@@ -906,6 +919,9 @@ function loadCustomCategories() {
 
 function saveCustomCategories(categories) {
   localStorage.setItem('misPatrones_customCategories', JSON.stringify(categories));
+  if (typeof syncToFirebase === 'function') {
+    syncToFirebase();
+  }
 }
 
 function getAllCategories() {
