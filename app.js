@@ -413,7 +413,6 @@ function createCardElement(pattern, index) {
     <div class="card-image" style="background: ${hasImage ? gradients[gradientIndex] : gradients[gradientIndex]}">
       ${imageContent}
       <span class="placeholder-icon" style="${placeholderStyle}">🧶</span>
-      <span class="pdf-badge">PDF</span>
       <button class="card-fav ${isFavorite ? 'liked' : ''}"
               onclick="event.stopPropagation(); toggleFavorite(${pattern.id})"
               title="${isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
