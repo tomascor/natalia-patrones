@@ -52,8 +52,20 @@ async function syncFromFirebase() {
       const localCats = JSON.parse(localStorage.getItem('misPatrones_customCategories') || '[]');
       const localDeleted = JSON.parse(localStorage.getItem('misPatrones_deletedDefaults') || '[]');
 
-      // Merge: Firebase como base, localStorage sobreescribe si tiene más datos
-      const mergedProps = { ...data.properties, ...localProps };
+      // Merge: para cada patrón, preferir valores no vacíos
+      const mergedProps = {};
+      const allIds = new Set([...Object.keys(data.properties || {}), ...Object.keys(localProps)]);
+      allIds.forEach(id => {
+        const fb = (data.properties || {})[id] || {};
+        const local = localProps[id] || {};
+        mergedProps[id] = {
+          category: local.category || fb.category || '',
+          tags: local.tags || fb.tags || '',
+          notes: local.notes || fb.notes || ''
+        };
+      });
+
+      // Para favoritos, unir ambas listas
       const mergedFavs = [...new Set([...(data.favorites || []), ...localFavs])];
       const mergedCats = (data.customCategories && data.customCategories.length > 0) ? data.customCategories : localCats;
       const mergedDeleted = (data.deletedDefaults && data.deletedDefaults.length > 0) ? data.deletedDefaults : localDeleted;
