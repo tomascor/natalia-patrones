@@ -86,7 +86,12 @@ async function syncFromFirebase() {
 }
 
 async function syncToFirebase() {
-  if (!db || !appReady || !window.__READY) return;
+  if (!db || !appReady || !window.__READY) {
+    console.log('syncToFirebase BLOQUEADO', {db: !!db, appReady, __READY: window.__READY});
+    return;
+  }
+
+  console.log('syncToFirebase EJECUTADO', new Error().stack);
 
   try {
     const data = {
