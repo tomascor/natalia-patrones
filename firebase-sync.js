@@ -49,16 +49,16 @@ async function syncFromFirebase() {
       const localCats = JSON.parse(localStorage.getItem('misPatrones_customCategories') || '[]');
       const localDeleted = JSON.parse(localStorage.getItem('misPatrones_deletedDefaults') || '[]');
 
-      // Merge: para cada patrón, preferir el que tenga datos
+      // Firebase es la fuente de verdad
       const mergedProps = {};
       const allIds = new Set([...Object.keys(data.properties || {}), ...Object.keys(localProps)]);
       allIds.forEach(id => {
         const fb = (data.properties || {})[id] || {};
         const local = localProps[id] || {};
         mergedProps[id] = {
-          category: local.category || fb.category || '',
-          tags: local.tags || fb.tags || '',
-          notes: local.notes || fb.notes || ''
+          category: fb.category || local.category || '',
+          tags: fb.tags || local.tags || '',
+          notes: fb.notes || local.notes || ''
         };
       });
 
