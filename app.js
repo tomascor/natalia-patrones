@@ -770,13 +770,23 @@ function saveCustomCategories(categories) {
 
 function getAllCategories() {
   const custom = loadCustomCategories();
-  const defaultCats = Object.keys(CATEGORY_EMOJIS);
-  const allCats = [...new Set([...defaultCats, ...custom.map(c => c.name)])];
+  
+  // Cargar defaults eliminados
+  let deletedDefaults = [];
+  try {
+    deletedDefaults = JSON.parse(localStorage.getItem('misPatrones_deletedDefaults') || '[]');
+  } catch {}
   
   const result = {};
-  defaultCats.forEach(cat => {
-    result[cat] = CATEGORY_EMOJIS[cat];
+  
+  // Defaults (excepto eliminados)
+  Object.keys(CATEGORY_EMOJIS).forEach(cat => {
+    if (!deletedDefaults.includes(cat)) {
+      result[cat] = CATEGORY_EMOJIS[cat];
+    }
   });
+  
+  // Custom
   custom.forEach(cat => {
     result[cat.name] = cat.icon;
   });
@@ -805,17 +815,26 @@ function renderCategoryList() {
   const container = document.getElementById('categoryEditorList');
   const custom = loadCustomCategories();
   
+  // Construir lista completa: default + custom
+  const defaultCats = Object.keys(CATEGORY_EMOJIS).map(name => ({
+    name,
+    icon: CATEGORY_EMOJIS[name],
+    isDefault: true
+  }));
+  
+  const customCats = custom.map(c => ({
+    ...c,
+    isDefault: false
+  }));
+  
+  const allCats = [...defaultCats, ...customCats];
+  
   const categoryCounts = {};
   state.patterns.forEach(p => {
     categoryCounts[p.category] = (categoryCounts[p.category] || 0) + 1;
   });
   
-  if (custom.length === 0) {
-    container.innerHTML = '<p style="font-size:0.82rem; color:var(--text-secondary);">No hay categorías personalizadas. Puedes agregar nuevas con el formulario de abajo.</p>';
-    return;
-  }
-  
-  container.innerHTML = custom.map((cat, index) => `
+  container.innerHTML = allCats.map((cat, index) => `
     <div class="cat-editor-item">
       <span class="cat-icon">${cat.icon}</span>
       <span class="cat-name">${cat.name}</span>
@@ -828,9 +847,23 @@ function renderCategoryList() {
   `).join('');
 }
 
-function editCategory(index) {
+function getAllEditableCategories() {
   const custom = loadCustomCategories();
-  const cat = custom[index];
+  const defaultCats = Object.keys(CATEGORY_EMOJIS).map(name => ({
+    name,
+    icon: CATEGORY_EMOJIS[name],
+    isDefault: true
+  }));
+  const customCats = custom.map(c => ({
+    ...c,
+    isDefault: false
+  }));
+  return [...defaultCats, ...customCats];
+}
+
+function editCategory(index) {
+  const allCats = getAllEditableCategories();
+  const cat = allCats[index];
   
   editingCategoryIndex = index;
   selectedIcon = cat.icon;
@@ -842,8 +875,8 @@ function editCategory(index) {
 }
 
 function deleteCategory(index) {
-  const custom = loadCustomCategories();
-  const cat = custom[index];
+  const allCats = getAllEditableCategories();
+  const cat = allCats[index];
   
   const patternsUsing = state.patterns.filter(p => p.category === cat.name).length;
   let message = `¿Eliminar la categoría "${cat.name}"?`;
@@ -871,8 +904,26 @@ function deleteCategory(index) {
       localStorage.setItem('misPatrones_properties', JSON.stringify(allProps));
     } catch {}
     
-    custom.splice(index, 1);
-    saveCustomCategories(custom);
+    // Si es default, agregar a "deletedDefaults" para que no reaparezca
+    if (cat.isDefault) {
+      let deleted = [];
+      try {
+        deleted = JSON.parse(localStorage.getItem('misPatrones_deletedDefaults') || '[]');
+      } catch {}
+      if (!deleted.includes(cat.name)) {
+        deleted.push(cat.name);
+        localStorage.setItem('misPatrones_deletedDefaults', JSON.stringify(deleted));
+      }
+    } else {
+      // Si es custom, eliminar de la lista
+      const custom = loadCustomCategories();
+      const customIndex = custom.findIndex(c => c.name === cat.name);
+      if (customIndex !== -1) {
+        custom.splice(customIndex, 1);
+        saveCustomCategories(custom);
+      }
+    }
+    
     renderCategoryList();
     populateFilters();
     applyFilters();
@@ -887,10 +938,10 @@ function saveCategory() {
     return;
   }
   
-  const custom = loadCustomCategories();
+  const allCats = getAllEditableCategories();
   
   // Verificar duplicados (ignorar si es la misma que se está editando)
-  const existingIndex = custom.findIndex(c => c.name.toLowerCase() === name.toLowerCase());
+  const existingIndex = allCats.findIndex(c => c.name.toLowerCase() === name.toLowerCase());
   if (existingIndex !== -1 && existingIndex !== editingCategoryIndex) {
     alert('Ya existe una categoría con ese nombre.');
     return;
@@ -900,21 +951,65 @@ function saveCategory() {
   
   if (editingCategoryIndex >= 0) {
     // Editar existente
-    const oldName = custom[editingCategoryIndex].name;
-    custom[editingCategoryIndex] = catData;
+    const oldCat = allCats[editingCategoryIndex];
+    const oldName = oldCat.name;
     
     // Actualizar patrones si cambió el nombre
     if (oldName !== name) {
       state.patterns.forEach(p => {
         if (p.category === oldName) p.category = name;
       });
+      // Actualizar propiedades guardadas
+      try {
+        const saved = localStorage.getItem('misPatrones_properties');
+        const allProps = saved ? JSON.parse(saved) : {};
+        Object.keys(allProps).forEach(id => {
+          if (allProps[id].category === oldName) {
+            allProps[id].category = name;
+          }
+        });
+        localStorage.setItem('misPatrones_properties', JSON.stringify(allProps));
+      } catch {}
+    }
+    
+    if (oldCat.isDefault) {
+      // Si es default, guardar como custom (con posible nuevo nombre/icono)
+      let custom = loadCustomCategories();
+      const existingCustom = custom.findIndex(c => c.name === oldName);
+      if (existingCustom !== -1) {
+        custom[existingCustom] = catData;
+      } else {
+        custom.push(catData);
+      }
+      saveCustomCategories(custom);
+      
+      // Si el nombre cambió, marcar el default como eliminado
+      if (oldName !== name) {
+        let deleted = [];
+        try {
+          deleted = JSON.parse(localStorage.getItem('misPatrones_deletedDefaults') || '[]');
+        } catch {}
+        if (!deleted.includes(oldName)) {
+          deleted.push(oldName);
+          localStorage.setItem('misPatrones_deletedDefaults', JSON.stringify(deleted));
+        }
+      }
+    } else {
+      // Si es custom, actualizar directamente
+      let custom = loadCustomCategories();
+      const existingCustom = custom.findIndex(c => c.name === oldName);
+      if (existingCustom !== -1) {
+        custom[existingCustom] = catData;
+      }
+      saveCustomCategories(custom);
     }
   } else {
     // Agregar nueva
+    let custom = loadCustomCategories();
     custom.push(catData);
+    saveCustomCategories(custom);
   }
   
-  saveCustomCategories(custom);
   cancelCategoryEdit();
   populateFilters();
   applyFilters();

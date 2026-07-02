@@ -68,7 +68,10 @@
       </div>
 
       <div class="sidebar-section">
-        <h3>Categorías</h3>
+        <div class="section-header">
+          <h3>Categorías</h3>
+          <button class="btn-icon" onclick="openCategoryEditor()" title="Editar categorías">✏️</button>
+        </div>
         <div class="category-tags" id="categoryTags">
           <!-- Se generan dinámicamente -->
         </div>
@@ -135,10 +138,7 @@
             
             <!-- Categoría -->
             <div class="property-group">
-              <label>
-                Categoría
-                <button type="button" class="btn-link" onclick="openCategoryEditor()">✏️ Editar categorías</button>
-              </label>
+              <label>Categoría</label>
               <select id="modalCategory" onchange="savePatternProperties()">
                 <option value="Sweater">🧶 Sweater</option>
                 <option value="Cardigan">🧥 Cardigan</option>
