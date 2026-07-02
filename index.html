@@ -96,6 +96,12 @@
         </div>
       </div>
 
+      <div class="sidebar-section" id="deleteSection" style="display:none;">
+        <h3>Eliminaciones pendientes</h3>
+        <p style="font-size:12px;color:#666;margin:5px 0;">Tienes <strong id="pendingDeleteCount">0</strong> patrones marcados para borrar.</p>
+        <button class="btn-clear" onclick="exportPendingDeletions()" style="width:100%;background:#e74c3c;color:white;">Descargar lista de eliminaciones</button>
+      </div>
+
     </aside>
 
     <!-- MAIN -->
@@ -273,6 +279,11 @@
       </div>
     </div>
   </div>
+
+  <!-- FOOTER -->
+  <footer class="app-footer">
+    <span>v1.0.0</span>
+  </footer>
 
   <!-- BOTON VOLVER ARRIBA -->
   <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>

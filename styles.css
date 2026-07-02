@@ -886,6 +886,15 @@ button {
   margin-bottom: 0.75rem;
 }
 
+/* ===== FOOTER ===== */
+.app-footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 11px;
+  color: #999;
+  border-top: 1px solid var(--border);
+}
+
 /* ===== BOTON VOLVER ARRIBA ===== */
 .back-to-top {
   position: fixed;

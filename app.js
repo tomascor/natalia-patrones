@@ -105,6 +105,7 @@ async function init() {
 
   // Actualizar UI
   updateFavCount();
+  updateDeleteSection();
 }
 
 // ===== CARGA DE DATOS =====
@@ -650,7 +651,41 @@ function deletePattern() {
   applyFilters();
   populateFilters();
   
-  alert(`"${pattern.name}" marcado para borrado.\n\nEjecuta publicar.bat para eliminar los archivos de tu PC.`);
+  alert(`"${pattern.name}" marcado para borrado.\n\nHaz clic en "Descargar lista de eliminaciones" en el sidebar, guarda el archivo, y ejecuta publicar.bat.`);
+  updateDeleteSection();
+}
+
+function updateDeleteSection() {
+  const pending = JSON.parse(localStorage.getItem('misPatrones_pendingDeletions') || '[]');
+  const section = document.getElementById('deleteSection');
+  const count = document.getElementById('pendingDeleteCount');
+  if (pending.length > 0) {
+    section.style.display = 'block';
+    count.textContent = pending.length;
+  } else {
+    section.style.display = 'none';
+  }
+}
+
+function exportPendingDeletions() {
+  const pending = JSON.parse(localStorage.getItem('misPatrones_pendingDeletions') || '[]');
+  if (pending.length === 0) {
+    alert('No hay eliminaciones pendientes.');
+    return;
+  }
+  
+  const dataStr = JSON.stringify(pending, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'pending_deletions.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  alert('Archivo descargado.\n\nGuárdalo en la carpeta D:\\Natalia\\web\\ y ejecuta publicar.bat');
 }
 
 // ===== PROPIEDADES DE PATRONES =====
