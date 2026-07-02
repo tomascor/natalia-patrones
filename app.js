@@ -496,9 +496,6 @@ function loadFavorites() {
 
 function saveFavorites() {
   localStorage.setItem('misPatrones_favorites', JSON.stringify(state.favorites));
-  if (typeof syncToFirebase === 'function') {
-    syncToFirebase();
-  }
 }
 
 function toggleFavorite(id) {
@@ -922,9 +919,6 @@ function loadCustomCategories() {
 
 function saveCustomCategories(categories) {
   localStorage.setItem('misPatrones_customCategories', JSON.stringify(categories));
-  if (typeof syncToFirebase === 'function') {
-    syncToFirebase();
-  }
 }
 
 function getAllCategories() {
