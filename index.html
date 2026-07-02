@@ -61,6 +61,25 @@
           <input type="text" id="designerSearch" placeholder="Escribe un nombre..." oninput="filterDesignerOptions()">
         </div>
 
+        <div class="filter-group">
+          <label>Fecha desde</label>
+          <input type="date" id="dateFrom" onchange="applyFilters()">
+        </div>
+
+        <div class="filter-group">
+          <label>Fecha hasta</label>
+          <input type="date" id="dateTo" onchange="applyFilters()">
+        </div>
+
+        <div class="filter-group">
+          <label>Ordenar por fecha</label>
+          <select id="dateSort" onchange="applyFilters()">
+            <option value="">Sin orden</option>
+            <option value="asc">Más antiguo primero</option>
+            <option value="desc">Más reciente primero</option>
+          </select>
+        </div>
+
         <div class="sidebar-count">
           Mostrando <strong id="resultCount">0</strong> patrones
           <button class="btn-clear" onclick="clearAllFilters()">Limpiar filtros</button>
@@ -74,26 +93,6 @@
         </div>
         <div class="category-tags" id="categoryTags">
           <!-- Se generan dinámicamente -->
-        </div>
-      </div>
-
-      <div class="sidebar-section">
-        <h3>Fecha</h3>
-        <div class="filter-group">
-          <label>Desde</label>
-          <input type="date" id="dateFrom" onchange="applyFilters()">
-        </div>
-        <div class="filter-group">
-          <label>Hasta</label>
-          <input type="date" id="dateTo" onchange="applyFilters()">
-        </div>
-        <div class="filter-group">
-          <label>Ordenar por fecha</label>
-          <select id="dateSort" onchange="applyFilters()">
-            <option value="">Sin orden</option>
-            <option value="asc">Más antiguo primero</option>
-            <option value="desc">Más reciente primero</option>
-          </select>
         </div>
       </div>
 
