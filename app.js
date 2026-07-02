@@ -176,10 +176,13 @@ function populateFilters() {
     .sort((a, b) => b[1] - a[1])
     .map(([cat]) => cat);
 
+  // Usar getAllCategories() para obtener iconos de categorías custom
+  const allCats = getAllCategories();
+  
   const tagsContainer = document.getElementById('categoryTags');
   let tagsHtml = '<button class="tag active" onclick="selectCategory(\'\')">Todos</button>';
   categories.forEach(cat => {
-    const emoji = CATEGORY_EMOJIS[cat] || '📄';
+    const emoji = allCats[cat] || '📄';
     tagsHtml += `<button class="tag" onclick="selectCategory('${cat}')">${emoji} ${cat}</button>`;
   });
   tagsContainer.innerHTML = tagsHtml;
@@ -292,6 +295,8 @@ function setupEventListeners() {
     if (e.key === 'Escape') {
       closeModal();
       closeFavoritesModal();
+      closeCategoryEditor();
+      closeIconPicker();
     }
   });
 
@@ -302,6 +307,14 @@ function setupEventListeners() {
 
   document.getElementById('favoritesModal').addEventListener('click', function (e) {
     if (e.target === this) closeFavoritesModal();
+  });
+
+  document.getElementById('categoryEditorModal').addEventListener('click', function (e) {
+    if (e.target === this) closeCategoryEditor();
+  });
+
+  document.getElementById('iconPickerModal').addEventListener('click', function (e) {
+    if (e.target === this) closeIconPicker();
   });
 
   // Scroll para botón volver arriba
@@ -349,7 +362,8 @@ function createCardElement(pattern, index) {
   card.style.animationDelay = `${Math.min(index * 0.03, 0.6)}s`;
 
   const isFavorite = state.favorites.includes(pattern.id);
-  const categoryEmoji = CATEGORY_EMOJIS[pattern.category] || '📄';
+  const allCats = getAllCategories();
+  const categoryEmoji = allCats[pattern.category] || '📄';
 
   // Nombre formateado para mostrar
   const displayName = formatPatternName(pattern.name);
@@ -501,8 +515,9 @@ function openFavoritesModal() {
         <p style="font-size:0.8rem; margin-top:0.5rem; opacity:0.7;">Haz clic en el corazón de cualquier tarjeta para agregarlo</p>
       </div>`;
   } else {
+    const allCats = getAllCategories();
     list.innerHTML = favPatterns.map(p => {
-      const emoji = CATEGORY_EMOJIS[p.category] || '📄';
+      const emoji = allCats[p.category] || '📄';
       return `
         <div class="fav-list-item">
           <div class="fav-list-info">
@@ -547,8 +562,13 @@ function openPreview(id) {
     modalImage.style.display = 'none';
   }
 
-  // Categoría
-  document.getElementById('modalCategory').value = props.category || pattern.category;
+  // Poblar select de categorías dinámicamente
+  const allCats = getAllCategories();
+  const categorySelect = document.getElementById('modalCategory');
+  const currentCategory = props.category || pattern.category;
+  categorySelect.innerHTML = Object.entries(allCats)
+    .map(([cat, icon]) => `<option value="${cat}" ${cat === currentCategory ? 'selected' : ''}>${icon} ${cat}</option>`)
+    .join('');
 
   // Etiquetas
   document.getElementById('modalTags').value = props.tags || '';
@@ -696,9 +716,10 @@ function updateToolbarTitle() {
   const title = document.getElementById('toolbarTitle');
   const count = document.getElementById('toolbarCount');
 
+  const allCats = getAllCategories();
   let label = 'Todos los patrones';
   if (state.showFavoritesOnly) label = 'Favoritos';
-  else if (state.selectedCategory) label = `${CATEGORY_EMOJIS[state.selectedCategory] || ''} ${state.selectedCategory}`;
+  else if (state.selectedCategory) label = `${allCats[state.selectedCategory] || ''} ${state.selectedCategory}`;
 
   title.innerHTML = `${label} <span>(${state.filteredPatterns.length})</span>`;
 }
@@ -714,4 +735,218 @@ function resetAll() {
 
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ===== EDITOR DE CATEGORÍAS =====
+const KNIT_ICONS = [
+  '🧶', '🧣', '🧦', '🧤', '🧥', '👕', '👗', '🧸',
+  '🪡', '🪢', '✂️', '📐', '📏', '🪝', '🪢', '🪡',
+  '💎', '🌸', '🌺', '🌻', '🌹', '🌷', '🍃', '🌿',
+  '⭐', '❤️', '💙', '💚', '💜', '🖤', '🤍', '🤎',
+  '🎁', '🎀', '🎈', '🎉', '🎊', '🏷️', '📌', '📍',
+  '📖', '📝', '✏️', '🖊️', '📚', '🗂️', '📁', '📂',
+  '🏠', '🏡', '🏕️', '🏖️', '⛰️', '🌄', '🌅', '🌇',
+  '🐱', '🐶', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁',
+  '🐯', '🐮', '🐷', '🐸', '🐵', '🐔', '🦄', '🐝',
+  '🦋', '🐛', '🐞', '🐜', '🪲', '🪳', '🕷️', '🦗'
+];
+
+const CATEGORY_ICONS = {};
+let editingCategoryIndex = -1;
+let selectedIcon = '📄';
+
+function loadCustomCategories() {
+  try {
+    const saved = localStorage.getItem('misPatrones_customCategories');
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCustomCategories(categories) {
+  localStorage.setItem('misPatrones_customCategories', JSON.stringify(categories));
+}
+
+function getAllCategories() {
+  const custom = loadCustomCategories();
+  const defaultCats = Object.keys(CATEGORY_EMOJIS);
+  const allCats = [...new Set([...defaultCats, ...custom.map(c => c.name)])];
+  
+  const result = {};
+  defaultCats.forEach(cat => {
+    result[cat] = CATEGORY_EMOJIS[cat];
+  });
+  custom.forEach(cat => {
+    result[cat.name] = cat.icon;
+  });
+  
+  return result;
+}
+
+function openCategoryEditor() {
+  editingCategoryIndex = -1;
+  selectedIcon = '📄';
+  document.getElementById('catEditId').value = '';
+  document.getElementById('catNameInput').value = '';
+  document.getElementById('catIconPreview').textContent = '📄';
+  document.getElementById('catFormTitle').textContent = 'Nueva categoría';
+  document.getElementById('catSaveBtn').textContent = 'Agregar';
+  
+  renderCategoryList();
+  document.getElementById('categoryEditorModal').classList.add('active');
+}
+
+function closeCategoryEditor() {
+  document.getElementById('categoryEditorModal').classList.remove('active');
+}
+
+function renderCategoryList() {
+  const container = document.getElementById('categoryEditorList');
+  const custom = loadCustomCategories();
+  
+  const categoryCounts = {};
+  state.patterns.forEach(p => {
+    categoryCounts[p.category] = (categoryCounts[p.category] || 0) + 1;
+  });
+  
+  if (custom.length === 0) {
+    container.innerHTML = '<p style="font-size:0.82rem; color:var(--text-secondary);">No hay categorías personalizadas. Puedes agregar nuevas con el formulario de abajo.</p>';
+    return;
+  }
+  
+  container.innerHTML = custom.map((cat, index) => `
+    <div class="cat-editor-item">
+      <span class="cat-icon">${cat.icon}</span>
+      <span class="cat-name">${cat.name}</span>
+      <span class="cat-count">${categoryCounts[cat.name] || 0}</span>
+      <div class="cat-actions">
+        <button class="btn-edit" onclick="editCategory(${index})" title="Editar">✏️</button>
+        <button class="btn-delete" onclick="deleteCategory(${index})" title="Eliminar">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function editCategory(index) {
+  const custom = loadCustomCategories();
+  const cat = custom[index];
+  
+  editingCategoryIndex = index;
+  selectedIcon = cat.icon;
+  document.getElementById('catEditId').value = index;
+  document.getElementById('catNameInput').value = cat.name;
+  document.getElementById('catIconPreview').textContent = cat.icon;
+  document.getElementById('catFormTitle').textContent = 'Editar categoría';
+  document.getElementById('catSaveBtn').textContent = 'Guardar';
+}
+
+function deleteCategory(index) {
+  const custom = loadCustomCategories();
+  const cat = custom[index];
+  
+  const patternsUsing = state.patterns.filter(p => p.category === cat.name).length;
+  let message = `¿Eliminar la categoría "${cat.name}"?`;
+  if (patternsUsing > 0) {
+    message += `\n\nHay ${patternsUsing} patrones con esta categoría. Se cambiarán a "Otro".`;
+  }
+  
+  if (confirm(message)) {
+    // Cambiar patrones que usan esta categoría a "Otro"
+    state.patterns.forEach(p => {
+      if (p.category === cat.name) {
+        p.category = 'Otro';
+      }
+    });
+    
+    // Actualizar propiedades guardadas
+    try {
+      const saved = localStorage.getItem('misPatrones_properties');
+      const allProps = saved ? JSON.parse(saved) : {};
+      Object.keys(allProps).forEach(id => {
+        if (allProps[id].category === cat.name) {
+          allProps[id].category = 'Otro';
+        }
+      });
+      localStorage.setItem('misPatrones_properties', JSON.stringify(allProps));
+    } catch {}
+    
+    custom.splice(index, 1);
+    saveCustomCategories(custom);
+    renderCategoryList();
+    populateFilters();
+    applyFilters();
+  }
+}
+
+function saveCategory() {
+  const name = document.getElementById('catNameInput').value.trim();
+  
+  if (!name) {
+    alert('Escribe un nombre para la categoría.');
+    return;
+  }
+  
+  const custom = loadCustomCategories();
+  
+  // Verificar duplicados (ignorar si es la misma que se está editando)
+  const existingIndex = custom.findIndex(c => c.name.toLowerCase() === name.toLowerCase());
+  if (existingIndex !== -1 && existingIndex !== editingCategoryIndex) {
+    alert('Ya existe una categoría con ese nombre.');
+    return;
+  }
+  
+  const catData = { name, icon: selectedIcon };
+  
+  if (editingCategoryIndex >= 0) {
+    // Editar existente
+    const oldName = custom[editingCategoryIndex].name;
+    custom[editingCategoryIndex] = catData;
+    
+    // Actualizar patrones si cambió el nombre
+    if (oldName !== name) {
+      state.patterns.forEach(p => {
+        if (p.category === oldName) p.category = name;
+      });
+    }
+  } else {
+    // Agregar nueva
+    custom.push(catData);
+  }
+  
+  saveCustomCategories(custom);
+  cancelCategoryEdit();
+  populateFilters();
+  applyFilters();
+}
+
+function cancelCategoryEdit() {
+  editingCategoryIndex = -1;
+  selectedIcon = '📄';
+  document.getElementById('catEditId').value = '';
+  document.getElementById('catNameInput').value = '';
+  document.getElementById('catIconPreview').textContent = '📄';
+  document.getElementById('catFormTitle').textContent = 'Nueva categoría';
+  document.getElementById('catSaveBtn').textContent = 'Agregar';
+}
+
+// ===== SELECTOR DE ICONOS =====
+function openIconPicker() {
+  const grid = document.getElementById('iconPickerGrid');
+  grid.innerHTML = KNIT_ICONS.map(icon => `
+    <button type="button" class="icon-picker-item ${icon === selectedIcon ? 'selected' : ''}" 
+            onclick="selectIcon('${icon}')">${icon}</button>
+  `).join('');
+  
+  document.getElementById('iconPickerModal').classList.add('active');
+}
+
+function closeIconPicker() {
+  document.getElementById('iconPickerModal').classList.remove('active');
+}
+
+function selectIcon(icon) {
+  selectedIcon = icon;
+  document.getElementById('catIconPreview').textContent = icon;
+  closeIconPicker();
 }

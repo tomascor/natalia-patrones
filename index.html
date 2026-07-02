@@ -135,7 +135,10 @@
             
             <!-- Categoría -->
             <div class="property-group">
-              <label>Categoría</label>
+              <label>
+                Categoría
+                <button type="button" class="btn-link" onclick="openCategoryEditor()">✏️ Editar categorías</button>
+              </label>
               <select id="modalCategory" onchange="savePatternProperties()">
                 <option value="Sweater">🧶 Sweater</option>
                 <option value="Cardigan">🧥 Cardigan</option>
@@ -189,6 +192,66 @@
       </div>
       <div class="modal-body modal-body-favorites">
         <div id="favoritesList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL Editor de Categorías -->
+  <div class="modal-overlay" id="categoryEditorModal">
+    <div class="modal modal-category-editor">
+      <div class="modal-header">
+        <h3>✏️ Editor de Categorías</h3>
+        <button class="modal-close" onclick="closeCategoryEditor()">✕</button>
+      </div>
+      <div class="modal-body modal-body-categories">
+        <!-- Lista de categorías existentes -->
+        <div class="cat-editor-section">
+          <h4>Categorías actuales</h4>
+          <div id="categoryEditorList" class="cat-editor-list">
+            <!-- Se genera dinámicamente -->
+          </div>
+        </div>
+
+        <!-- Formulario nueva/editar categoría -->
+        <div class="cat-editor-section cat-editor-form">
+          <h4 id="catFormTitle">Nueva categoría</h4>
+          <input type="hidden" id="catEditId" value="">
+          
+          <div class="cat-form-row">
+            <div class="cat-form-field">
+              <label>Nombre</label>
+              <input type="text" id="catNameInput" placeholder="ej: Pullover">
+            </div>
+          </div>
+
+          <div class="cat-form-row">
+            <div class="cat-form-field cat-icon-field">
+              <label>Icono</label>
+              <div class="cat-icon-preview" id="catIconPreview">📄</div>
+              <button type="button" class="btn-secondary btn-sm" onclick="openIconPicker()">Cambiar icono</button>
+            </div>
+          </div>
+
+          <div class="cat-form-actions">
+            <button type="button" class="btn-secondary" onclick="cancelCategoryEdit()">Cancelar</button>
+            <button type="button" class="btn-view" onclick="saveCategory()" id="catSaveBtn">Agregar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL Selector de Iconos -->
+  <div class="modal-overlay" id="iconPickerModal">
+    <div class="modal modal-icon-picker">
+      <div class="modal-header">
+        <h3>🧶 Elegir icono</h3>
+        <button class="modal-close" onclick="closeIconPicker()">✕</button>
+      </div>
+      <div class="modal-body modal-body-icons">
+        <div class="icon-picker-grid" id="iconPickerGrid">
+          <!-- Se genera dinámicamente -->
+        </div>
       </div>
     </div>
   </div>

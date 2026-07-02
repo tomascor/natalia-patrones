@@ -1149,3 +1149,241 @@ button {
     max-height: 40vh;
   }
 }
+
+/* ===== MODAL EDITOR DE CATEGORÍAS ===== */
+.modal-category-editor {
+  max-width: 550px;
+}
+
+.modal-body-categories {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 1.5rem;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cat-editor-section {
+  width: 100%;
+}
+
+.cat-editor-section h4 {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cat-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.cat-editor-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  transition: all var(--transition);
+}
+
+.cat-editor-item:hover {
+  border-color: var(--accent);
+  background: #FEF8F5;
+}
+
+.cat-editor-item .cat-icon {
+  font-size: 1.2rem;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.cat-editor-item .cat-name {
+  flex: 1;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.cat-editor-item .cat-count {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: var(--border);
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+}
+
+.cat-editor-item .cat-actions {
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.cat-editor-item:hover .cat-actions {
+  opacity: 1;
+}
+
+.cat-actions button {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition);
+}
+
+.cat-actions .btn-edit:hover {
+  background: #E3F2FD;
+  color: #1976D2;
+}
+
+.cat-actions .btn-delete:hover {
+  background: #FFEBEE;
+  color: #D32F2F;
+}
+
+/* Formulario de categoría */
+.cat-editor-form {
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  border: 1px solid var(--border);
+}
+
+.cat-editor-form h4 {
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.cat-form-row {
+  margin-bottom: 0.75rem;
+}
+
+.cat-form-field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  color: var(--text-secondary);
+}
+
+.cat-form-field input[type="text"] {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+}
+
+.cat-form-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.cat-icon-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cat-icon-field label {
+  margin-bottom: 0 !important;
+}
+
+.cat-icon-preview {
+  width: 42px;
+  height: 42px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: white;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.75rem !important;
+  font-size: 0.78rem !important;
+}
+
+.cat-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 0;
+  margin-left: 0.5rem;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+/* ===== MODAL SELECTOR DE ICONOS ===== */
+.modal-icon-picker {
+  max-width: 480px;
+}
+
+.modal-body-icons {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 1.5rem;
+}
+
+.icon-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.icon-picker-item {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.icon-picker-item:hover {
+  border-color: var(--accent);
+  background: #FEF8F5;
+  transform: scale(1.1);
+}
+
+.icon-picker-item.selected {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+}
