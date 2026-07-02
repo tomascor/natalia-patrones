@@ -1,4 +1,4 @@
-@echo off
+content = r"""@echo off
 chcp 65001 >nul
 title Publicar Patrones
 color 0A
@@ -29,3 +29,8 @@ echo.
 echo Web: https://tomascor.github.io/natalia-patrones/
 echo.
 pause
+"""
+
+with open("D:/Natalia/web/publicar.bat", "wb") as f:
+    f.write(content.encode("ascii"))
+print("OK - saved without BOM")
