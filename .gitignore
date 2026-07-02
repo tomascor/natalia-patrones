@@ -3,9 +3,12 @@ update.ps1
 extract_images.py
 update_data_with_images.py
 split_images.py
+delete_patterns.py
+add_dates.py
 images.zip
 images_part*.zip
 README.md
+drive_links.json
 
 # Google Drive credentials (nunca subir)
 credentials.json
