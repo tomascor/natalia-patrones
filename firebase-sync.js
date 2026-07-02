@@ -2,7 +2,7 @@
 // Sincronización de datos con Firebase Firestore
 
 let db = null;
-let userId = null;
+const SHARED_DOC = 'shared-data'; // Documento compartido para todos los dispositivos
 
 // Inicializar Firebase
 function initFirebase() {
@@ -25,15 +25,7 @@ function initFirebase() {
       script2.onload = function() {
         firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
-
-        // Generar o cargar ID de usuario
-        userId = localStorage.getItem('misPatrones_userId');
-        if (!userId) {
-          userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-          localStorage.setItem('misPatrones_userId', userId);
-        }
-
-        console.log('Firebase inicializado. UserID:', userId);
+        console.log('Firebase inicializado. Sincronizando...');
         syncFromFirebase();
       };
     };
@@ -47,25 +39,26 @@ function initFirebase() {
 
 // Sincronizar DESDE Firebase (cargar)
 async function syncFromFirebase() {
-  if (!db || !userId) return;
+  if (!db) return;
 
   try {
-    const doc = await db.collection('users').doc(userId).get();
+    const doc = await db.collection('app').doc(SHARED_DOC).get();
     if (doc.exists) {
       const data = doc.data();
 
-      // Merge con localStorage existente (localStorage tiene prioridad local)
+      // Cargar datos locales
       const localProps = JSON.parse(localStorage.getItem('misPatrones_properties') || '{}');
       const localFavs = JSON.parse(localStorage.getItem('misPatrones_favorites') || '[]');
       const localCats = JSON.parse(localStorage.getItem('misPatrones_customCategories') || '[]');
       const localDeleted = JSON.parse(localStorage.getItem('misPatrones_deletedDefaults') || '[]');
 
-      // Firebase como base, localStorage sobreescribe si tiene más datos
+      // Merge: Firebase como base, localStorage sobreescribe si tiene más datos
       const mergedProps = { ...data.properties, ...localProps };
       const mergedFavs = [...new Set([...(data.favorites || []), ...localFavs])];
-      const mergedCats = data.customCategories || localCats;
-      const mergedDeleted = data.deletedDefaults || localDeleted;
+      const mergedCats = (data.customCategories && data.customCategories.length > 0) ? data.customCategories : localCats;
+      const mergedDeleted = (data.deletedDefaults && data.deletedDefaults.length > 0) ? data.deletedDefaults : localDeleted;
 
+      // Guardar merge en localStorage
       localStorage.setItem('misPatrones_properties', JSON.stringify(mergedProps));
       localStorage.setItem('misPatrones_favorites', JSON.stringify(mergedFavs));
       localStorage.setItem('misPatrones_customCategories', JSON.stringify(mergedCats));
@@ -75,6 +68,9 @@ async function syncFromFirebase() {
       await syncToFirebase();
 
       console.log('Datos sincronizados desde Firebase');
+    } else {
+      // Primera vez: guardar datos locales en Firebase
+      await syncToFirebase();
     }
   } catch (error) {
     console.error('Error leyendo de Firebase:', error);
@@ -83,7 +79,7 @@ async function syncFromFirebase() {
 
 // Sincronizar HACIA Firebase (guardar)
 async function syncToFirebase() {
-  if (!db || !userId) return;
+  if (!db) return;
 
   try {
     const data = {
@@ -94,26 +90,9 @@ async function syncToFirebase() {
       lastSync: new Date().toISOString()
     };
 
-    await db.collection('users').doc(userId).set(data);
+    await db.collection('app').doc(SHARED_DOC).set(data);
     console.log('Datos guardados en Firebase');
   } catch (error) {
     console.error('Error guardando en Firebase:', error);
   }
-}
-
-// Guardar propiedades y sincronizar
-function savePatternPropertiesAndSync() {
-  savePatternProperties();
-  syncToFirebase();
-}
-
-// Guardar favoritos y sincronizar
-function saveFavoritesAndSync() {
-  saveFavorites();
-  syncToFirebase();
-}
-
-// Guardar categorías custom y sincronizar
-function saveCustomCategoriesAndSync() {
-  syncToFirebase();
 }
