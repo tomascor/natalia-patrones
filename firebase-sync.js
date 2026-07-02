@@ -4,6 +4,7 @@
 let db = null;
 const SHARED_DOC = 'shared-data';
 let firebaseReady = false;
+let appReady = false;
 
 function initFirebase() {
   return new Promise((resolve) => {
@@ -85,7 +86,7 @@ async function syncFromFirebase() {
 }
 
 async function syncToFirebase() {
-  if (!db) return;
+  if (!db || !appReady) return;
 
   try {
     const data = {

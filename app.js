@@ -114,6 +114,9 @@ async function init() {
   // Actualizar UI
   updateFavCount();
   updateDeleteSection();
+
+  // Marcar app como lista (permite syncToFirebase)
+  appReady = true;
 }
 
 // ===== CARGA DE DATOS =====
