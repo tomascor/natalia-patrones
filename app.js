@@ -736,7 +736,18 @@ function downloadPdf(id) {
 
 // ===== UTILIDADES =====
 function updateResultCount() {
-  document.getElementById('resultCount').textContent = state.filteredPatterns.length;
+  const count = state.filteredPatterns.length;
+  const total = state.patterns.length;
+  const el = document.getElementById('resultCount');
+  const parent = el.parentElement;
+  
+  if (count < total) {
+    parent.innerHTML = `<span>Mostrando <strong id="resultCount">${count}</strong> de ${total} patrones</span>
+      <button class="btn-clear" onclick="clearAllFilters()">Limpiar filtros</button>`;
+  } else {
+    parent.innerHTML = `<span>Mostrando <strong id="resultCount">${count}</strong> patrones</span>
+      <button class="btn-clear" onclick="clearAllFilters()">Limpiar filtros</button>`;
+  }
 }
 
 function updateToolbarTitle() {
