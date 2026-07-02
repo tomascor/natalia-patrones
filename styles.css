@@ -1389,6 +1389,28 @@ button {
   text-decoration: underline;
 }
 
+.btn-save-properties {
+  width: 100%;
+  padding: 0.7rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-save-properties:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-save-properties.saved {
+  background: #2ecc71;
+}
+
 .property-delete {
   margin-top: 1rem;
   padding-top: 1rem;

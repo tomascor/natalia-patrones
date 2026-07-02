@@ -158,7 +158,7 @@
             <!-- Categoría -->
             <div class="property-group">
               <label>Categoría</label>
-              <select id="modalCategory" onchange="savePatternProperties()">
+              <select id="modalCategory">
                 <option value="Sweater">🧶 Sweater</option>
                 <option value="Cardigan">🧥 Cardigan</option>
                 <option value="Chal">🧣 Chal</option>
@@ -188,13 +188,18 @@
             <!-- Etiquetas -->
             <div class="property-group">
               <label>Etiquetas (separadas por coma)</label>
-              <input type="text" id="modalTags" placeholder="ej: verano, algodón, fácil" oninput="savePatternProperties()">
+              <input type="text" id="modalTags" placeholder="ej: verano, algodón, fácil">
             </div>
             
             <!-- Observaciones -->
             <div class="property-group">
               <label>Observaciones</label>
-              <textarea id="modalNotes" rows="4" placeholder="Escribe aquí tus notas..." oninput="savePatternProperties()"></textarea>
+              <textarea id="modalNotes" rows="4" placeholder="Escribe aquí tus notas..."></textarea>
+            </div>
+
+            <!-- Guardar -->
+            <div class="property-group" style="margin-top:1rem;">
+              <button type="button" class="btn-save-properties" onclick="savePatternProperties(); showSaveConfirmation();">💾 Guardar</button>
             </div>
 
             <!-- Borrar diseño -->

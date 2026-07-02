@@ -735,8 +735,22 @@ function savePatternProperties() {
   const pattern = state.patterns.find(p => p.id === state.currentPreviewId);
   if (pattern) {
     pattern.category = category;
+    pattern.tags = tags;
+    pattern.notes = notes;
     applyFilters();
   }
+}
+
+function showSaveConfirmation() {
+  const btn = document.querySelector('.btn-save-properties');
+  if (!btn) return;
+  const original = btn.textContent;
+  btn.textContent = '✓ Guardado';
+  btn.classList.add('saved');
+  setTimeout(() => {
+    btn.textContent = original;
+    btn.classList.remove('saved');
+  }, 1500);
 }
 
 function getPatternTags(id) {
