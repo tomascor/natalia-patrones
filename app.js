@@ -606,6 +606,10 @@ function openPreview(id) {
 }
 
 function closeModal() {
+  // Guardar propiedades antes de cerrar
+  if (state.currentPreviewId) {
+    savePatternProperties();
+  }
   document.getElementById('previewModal').classList.remove('active');
   state.currentPreviewId = null;
 }
