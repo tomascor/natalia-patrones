@@ -11,6 +11,8 @@ images_part*.zip
 README.md
 drive_links.json
 pending_deletions.json
+deleted_ids.json
+trash/
 
 # Google Drive credentials (nunca subir)
 credentials.json
