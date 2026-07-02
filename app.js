@@ -118,6 +118,16 @@ async function init() {
   // Marcar app como lista (permite syncToFirebase)
   appReady = true;
   window.__READY = true;
+
+  // Activar listener en tiempo real de Firebase
+  if (typeof startFirebaseListener === 'function') {
+    startFirebaseListener(function() {
+      loadFavorites();
+      applySavedProperties();
+      applyFilters();
+      updateFavCount();
+    });
+  }
 }
 
 // ===== CARGA DE DATOS =====
