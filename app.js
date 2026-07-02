@@ -82,12 +82,15 @@ const LANGUAGE_NAMES = {
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-  // Inicializar Firebase si está configurado
+  // 1. Esperar a que Firebase cargue y sincronice datos ANTES de leer localStorage
   if (typeof initFirebase === 'function') {
-    initFirebase();
+    await initFirebase();
+    if (typeof syncFromFirebase === 'function') {
+      await syncFromFirebase();
+    }
   }
 
-  // Cargar favoritos de localStorage
+  // 2. AHORA sí: cargar de localStorage (ya tiene datos de Firebase)
   loadFavorites();
 
   // Mostrar skeleton loading

@@ -3,39 +3,46 @@
 
 let db = null;
 const SHARED_DOC = 'shared-data';
+let firebaseReady = false;
 
 function initFirebase() {
-  if (typeof firebaseConfig === 'undefined' || firebaseConfig.apiKey === 'TU_API_KEY') {
-    console.log('Firebase no configurado, usando solo localStorage');
-    return false;
-  }
+  return new Promise((resolve) => {
+    if (typeof firebaseConfig === 'undefined' || firebaseConfig.apiKey === 'TU_API_KEY') {
+      console.log('Firebase no configurado, usando solo localStorage');
+      resolve(false);
+      return;
+    }
 
-  try {
-    const script1 = document.createElement('script');
-    script1.src = 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js';
-    document.head.appendChild(script1);
+    try {
+      const script1 = document.createElement('script');
+      script1.src = 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js';
+      document.head.appendChild(script1);
 
-    script1.onload = function() {
-      const script2 = document.createElement('script');
-      script2.src = 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js';
-      document.head.appendChild(script2);
+      script1.onload = function() {
+        const script2 = document.createElement('script');
+        script2.src = 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js';
+        document.head.appendChild(script2);
 
-      script2.onload = function() {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-        console.log('Firebase OK');
-        syncFromFirebase();
+        script2.onload = function() {
+          firebase.initializeApp(firebaseConfig);
+          db = firebase.firestore();
+          firebaseReady = true;
+          console.log('Firebase OK');
+          resolve(true);
+        };
       };
-    };
 
-    return true;
-  } catch (error) {
-    console.error('Error Firebase:', error);
-    return false;
-  }
+      script1.onerror = function() {
+        console.log('Error cargando Firebase, usando solo localStorage');
+        resolve(false);
+      };
+    } catch (error) {
+      console.error('Error Firebase:', error);
+      resolve(false);
+    }
+  });
 }
 
-// Cargar datos DESDE Firebase solo al iniciar
 async function syncFromFirebase() {
   if (!db) return;
 
@@ -49,7 +56,6 @@ async function syncFromFirebase() {
       const localCats = JSON.parse(localStorage.getItem('misPatrones_customCategories') || '[]');
       const localDeleted = JSON.parse(localStorage.getItem('misPatrones_deletedDefaults') || '[]');
 
-      // Firebase es la fuente de verdad
       const mergedProps = {};
       const allIds = new Set([...Object.keys(data.properties || {}), ...Object.keys(localProps)]);
       allIds.forEach(id => {
@@ -78,7 +84,6 @@ async function syncFromFirebase() {
   }
 }
 
-// Guardar HACIA Firebase (solo cuando el usuario guarda)
 async function syncToFirebase() {
   if (!db) return;
 
