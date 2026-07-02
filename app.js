@@ -741,14 +741,13 @@ function downloadPdf(id) {
 function updateResultCount() {
   const count = state.filteredPatterns.length;
   const total = state.patterns.length;
-  const el = document.getElementById('resultCount');
-  const parent = el.parentElement;
+  const container = document.querySelector('.sidebar-count');
   
   if (count < total) {
-    parent.innerHTML = `<span>Mostrando <strong id="resultCount">${count}</strong> de ${total} patrones</span>
+    container.innerHTML = `<span>Mostrando <strong>${count}</strong> de ${total} patrones</span>
       <button class="btn-clear" onclick="clearAllFilters()">Limpiar filtros</button>`;
   } else {
-    parent.innerHTML = `<span>Mostrando <strong id="resultCount">${count}</strong> patrones</span>
+    container.innerHTML = `<span>Mostrando <strong>${count}</strong> patrones</span>
       <button class="btn-clear" onclick="clearAllFilters()">Limpiar filtros</button>`;
   }
 }
