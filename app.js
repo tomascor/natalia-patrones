@@ -117,6 +117,7 @@ async function init() {
 
   // Marcar app como lista (permite syncToFirebase)
   appReady = true;
+  window.__READY = true;
 }
 
 // ===== CARGA DE DATOS =====

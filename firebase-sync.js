@@ -86,7 +86,7 @@ async function syncFromFirebase() {
 }
 
 async function syncToFirebase() {
-  if (!db || !appReady) return;
+  if (!db || !appReady || !window.__READY) return;
 
   try {
     const data = {
