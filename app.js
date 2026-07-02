@@ -198,6 +198,9 @@ function applyFilters() {
   const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
   const designerFilter = document.getElementById('designerFilter').value;
   const category = state.selectedCategory;
+  const dateFrom = document.getElementById('dateFrom').value;
+  const dateTo = document.getElementById('dateTo').value;
+  const dateSort = document.getElementById('dateSort').value;
 
   state.filteredPatterns = state.patterns.filter(pattern => {
     // Filtro de búsqueda
@@ -213,11 +216,24 @@ function applyFilters() {
     // Filtro de categoría
     if (category && pattern.category !== category) return false;
 
+    // Filtro de fecha desde
+    if (dateFrom && pattern.date && pattern.date < dateFrom) return false;
+
+    // Filtro de fecha hasta
+    if (dateTo && pattern.date && pattern.date > dateTo) return false;
+
     // Modo favoritos
     if (state.showFavoritesOnly && !state.favorites.includes(pattern.id)) return false;
 
     return true;
   });
+
+  // Ordenar por fecha
+  if (dateSort === 'asc') {
+    state.filteredPatterns.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  } else if (dateSort === 'desc') {
+    state.filteredPatterns.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  }
 
   // Actualizar UI
   hideSkeletons();
@@ -246,6 +262,9 @@ function clearAllFilters() {
   document.getElementById('searchInput').value = '';
   document.getElementById('designerFilter').value = '';
   document.getElementById('designerSearch').value = '';
+  document.getElementById('dateFrom').value = '';
+  document.getElementById('dateTo').value = '';
+  document.getElementById('dateSort').value = '';
   state.selectedCategory = '';
   state.showFavoritesOnly = false;
 
@@ -406,6 +425,7 @@ function createCardElement(pattern, index) {
       <div class="card-designer">por ${highlightedDesigner}</div>
       <div class="card-badges">
         <span class="badge badge-type">${categoryEmoji} ${pattern.category}</span>
+        ${pattern.date ? `<span class="badge badge-date">📅 ${formatDate(pattern.date)}</span>` : ''}
       </div>
       <div class="card-actions">
         <button class="btn-view" onclick="openPreview(${pattern.id})">⚙ Propiedades</button>
@@ -433,6 +453,13 @@ function highlightText(text, term) {
 
 function escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const [year, month, day] = dateStr.split('-');
+  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${parseInt(day)} ${months[parseInt(month)-1]} ${year}`;
 }
 
 // ===== VISTA =====

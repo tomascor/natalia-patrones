@@ -603,6 +603,11 @@ button {
   color: var(--text-secondary);
 }
 
+.badge-date {
+  background: #E8F0E5;
+  color: #5A6B45;
+}
+
 .badge-lang {
   background: #E5EDDB;
   color: #5A6B45;

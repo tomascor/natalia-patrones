@@ -77,6 +77,26 @@
         </div>
       </div>
 
+      <div class="sidebar-section">
+        <h3>Fecha</h3>
+        <div class="filter-group">
+          <label>Desde</label>
+          <input type="date" id="dateFrom" onchange="applyFilters()">
+        </div>
+        <div class="filter-group">
+          <label>Hasta</label>
+          <input type="date" id="dateTo" onchange="applyFilters()">
+        </div>
+        <div class="filter-group">
+          <label>Ordenar por fecha</label>
+          <select id="dateSort" onchange="applyFilters()">
+            <option value="">Sin orden</option>
+            <option value="asc">Más antiguo primero</option>
+            <option value="desc">Más reciente primero</option>
+          </select>
+        </div>
+      </div>
+
     </aside>
 
     <!-- MAIN -->
