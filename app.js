@@ -644,6 +644,7 @@ function openPreview(id) {
 }
 
 function closeModal() {
+  closeCamera();
   document.getElementById('previewModal').classList.remove('active');
   state.currentPreviewId = null;
 }
@@ -723,24 +724,23 @@ function exportPendingDeletions() {
 
 // ===== PROPIEDADES DE PATRONES =====
 function loadPatternProperties(id) {
-  // Primero buscar en el estado (propiedades aplicadas)
-  const pattern = state.patterns.find(p => p.id === Number(id));
-  if (pattern && (pattern.tags || pattern.notes)) {
-    return {
-      category: pattern.category,
-      tags: pattern.tags || '',
-      notes: pattern.notes || ''
-    };
-  }
-  
-  // Si no, buscar en localStorage
   try {
     const saved = localStorage.getItem('misPatrones_properties');
     const allProps = saved ? JSON.parse(saved) : {};
-    return allProps[String(id)] || {};
-  } catch {
-    return {};
+    const props = allProps[String(id)];
+    if (props) return props;
+  } catch {}
+
+  const pattern = state.patterns.find(p => p.id === Number(id));
+  if (pattern) {
+    return {
+      category: pattern.category || '',
+      tags: pattern.tags || '',
+      notes: pattern.notes || '',
+      photo: ''
+    };
   }
+  return {};
 }
 
 function savePatternProperties() {
