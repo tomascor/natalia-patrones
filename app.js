@@ -543,13 +543,6 @@ function updateFavCount() {
 function toggleFavoritesView() {
   state.showFavoritesOnly = !state.showFavoritesOnly;
   document.getElementById('btnFavorites').classList.toggle('active', state.showFavoritesOnly);
-
-  if (state.showFavoritesOnly) {
-    openFavoritesModal();
-  } else {
-    closeFavoritesModal();
-  }
-
   applyFilters();
 }
 
