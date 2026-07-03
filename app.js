@@ -726,6 +726,13 @@ function exportPendingDeletions() {
   alert('Archivo descargado.\n\nGuárdalo en la carpeta D:\\Natalia\\web\\ y ejecuta publicar.bat');
 }
 
+function clearPendingDeletions() {
+  if (!confirm('¿Borrar la lista de eliminaciones pendientes?')) return;
+  localStorage.setItem('misPatrones_pendingDeletions', '[]');
+  updateDeleteSection();
+  alert('Lista limpiada.');
+}
+
 // ===== PROPIEDADES DE PATRONES =====
 function loadPatternProperties(id) {
   try {
