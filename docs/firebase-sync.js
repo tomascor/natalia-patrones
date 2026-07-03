@@ -73,7 +73,7 @@ function startFirebaseListener(callback) {
         category: fb.category || local.category || '',
         tags: fb.tags || local.tags || '',
         notes: fb.notes || local.notes || '',
-        photo: fb.photo || local.photo || ''
+        photos: fb.photos || local.photos || []
       };
     });
 
@@ -115,12 +115,12 @@ async function syncFromFirebase() {
       allIds.forEach(function(id) {
         const fb = (data.properties || {})[id] || {};
         const local = localProps[id] || {};
-        mergedProps[id] = {
-          category: fb.category || local.category || '',
-          tags: fb.tags || local.tags || '',
-          notes: fb.notes || local.notes || '',
-          photo: fb.photo || local.photo || ''
-        };
+      mergedProps[id] = {
+        category: fb.category || local.category || '',
+        tags: fb.tags || local.tags || '',
+        notes: fb.notes || local.notes || '',
+        photos: fb.photos || local.photos || []
+      };
       });
 
       const mergedFavs = [...new Set([...(data.favorites || []), ...localFavs])];
