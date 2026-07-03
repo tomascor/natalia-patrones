@@ -17,6 +17,11 @@ function initFirebase() {
       return;
     }
 
+    const timeout = setTimeout(() => {
+      console.log('Firebase timeout, usando solo localStorage');
+      resolve(false);
+    }, 8000);
+
     try {
       const script1 = document.createElement('script');
       script1.src = 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js';
@@ -28,19 +33,27 @@ function initFirebase() {
         document.head.appendChild(script2);
 
         script2.onload = function() {
-          firebase.initializeApp(firebaseConfig);
-          db = firebase.firestore();
-          firebaseReady = true;
-          console.log('Firebase SDK listo');
-          resolve(true);
+          clearTimeout(timeout);
+          try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            firebaseReady = true;
+            console.log('Firebase SDK listo');
+            resolve(true);
+          } catch (e) {
+            console.error('Error initializing Firebase:', e);
+            resolve(false);
+          }
         };
       };
 
       script1.onerror = function() {
+        clearTimeout(timeout);
         console.log('Error cargando Firebase, usando solo localStorage');
         resolve(false);
       };
     } catch (error) {
+      clearTimeout(timeout);
       console.error('Error Firebase:', error);
       resolve(false);
     }
