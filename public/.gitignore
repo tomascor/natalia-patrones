@@ -1,0 +1,20 @@
+# Scripts de actualización (no van en la web)
+update.ps1
+extract_images.py
+update_data_with_images.py
+split_images.py
+delete_patterns.py
+add_dates.py
+fix_bat.py
+images.zip
+images_part*.zip
+README.md
+drive_links.json
+pending_deletions.json
+deleted_ids.json
+trash/
+
+# Google Drive credentials (nunca subir)
+credentials.json
+token.pickle
+token.json

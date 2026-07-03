@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Biblioteca personal de patrones de tejido - Organiza y busca tus patrones favoritos">
+  <meta name="theme-color" content="#C67B5C">
+  <title>Mis Patrones · Biblioteca de tejido</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧶</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="#" class="logo" onclick="resetAll(); return false;">
+        <div class="logo-icon">🧶</div>
+        <div class="logo-text">
+          <h1>Mis Patrones</h1>
+          <span>Biblioteca de tejido</span>
+        </div>
+      </a>
+
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, diseñador, categoría...">
+      </div>
+
+      <div class="header-actions">
+        <span class="stats-badge" id="totalStats">Cargando...</span>
+        <button class="btn-fav" id="btnFavorites" onclick="toggleFavoritesView()">
+          ❤️ Favoritos <span class="count" id="favCount">0</span>
+        </button>
+      </div>
+
+      <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+    </div>
+  </header>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+      <div class="sidebar-section">
+        <h3>Filtros</h3>
+
+        <div class="filter-group">
+          <label for="designerFilter">Diseñadora / Diseñador</label>
+          <select id="designerFilter" onchange="applyFilters()">
+            <option value="">Todos los diseñadores</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="designerSearch">Buscar diseñador</label>
+          <input type="text" id="designerSearch" placeholder="Escribe un nombre..." oninput="filterDesignerOptions()">
+        </div>
+
+        <div class="filter-group">
+          <label>Fecha desde</label>
+          <input type="date" id="dateFrom" onchange="applyFilters()">
+        </div>
+
+        <div class="filter-group">
+          <label>Fecha hasta</label>
+          <input type="date" id="dateTo" onchange="applyFilters()">
+        </div>
+
+        <div class="filter-group">
+          <label>Ordenar por fecha</label>
+          <select id="dateSort" onchange="applyFilters()">
+            <option value="">Sin orden</option>
+            <option value="asc">Más antiguo primero</option>
+            <option value="desc">Más reciente primero</option>
+          </select>
+        </div>
+
+        <div class="sidebar-count">
+          <span>Mostrando <strong id="resultCount">0</strong> patrones</span>
+          <button class="btn-clear" onclick="clearAllFilters()">Limpiar filtros</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-header">
+          <h3>Categorías</h3>
+          <button class="btn-icon" onclick="openCategoryEditor()" title="Editar categorías">✏️</button>
+        </div>
+        <div class="category-tags" id="categoryTags">
+          <!-- Se generan dinámicamente -->
+        </div>
+      </div>
+
+      <div class="sidebar-section" id="deleteSection" style="display:none;">
+        <h3>Eliminaciones pendientes</h3>
+        <p style="font-size:12px;color:#666;margin:5px 0;">Tienes <strong id="pendingDeleteCount">0</strong> patrones marcados para borrar.</p>
+        <button class="btn-clear" onclick="exportPendingDeletions()" style="width:100%;background:#e74c3c;color:white;">Descargar lista de eliminaciones</button>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Sincronizar datos</h3>
+        <p style="font-size:12px;color:#666;margin:5px 0;">Exporta/importa tus propiedades y favoritos entre dispositivos.</p>
+        <button class="btn-clear" onclick="exportAllData()" style="width:100%;margin-bottom:5px;">📤 Exportar mis datos</button>
+        <button class="btn-clear" onclick="document.getElementById('importDataFile').click()" style="width:100%;">📥 Importar datos</button>
+        <input type="file" id="importDataFile" accept=".json" style="display:none;" onchange="importAllData(event)">
+      </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="toolbar">
+        <h2 id="toolbarTitle">Todos los patrones <span id="toolbarCount">(0)</span></h2>
+        <div class="view-options">
+          <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')" title="Vista cuadrícula">⊞</button>
+          <button class="view-btn" id="listViewBtn" onclick="setView('list')" title="Vista lista">☰</button>
+        </div>
+      </div>
+
+      <div class="grid" id="patternsGrid">
+        <!-- Se generan dinámicamente -->
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="icon">🧶</div>
+        <h3>No se encontraron patrones</h3>
+        <p>Prueba con otros filtros o términos de búsqueda</p>
+      </div>
+
+      <div class="skeleton-grid" id="skeletonGrid">
+        <!-- Skeleton loading -->
+      </div>
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>Mi Biblioteca de Patrones · <span id="footerTotal">0</span> patrones · <span id="footerDesigners">0</span> diseñadores</p>
+    <p style="margin-top:0.3rem; font-size:0.72rem;">Colección personal organizada por categoría, diseñador e idioma</p>
+  </footer>
+
+  <!-- MODAL Propiedades -->
+  <div class="modal-overlay" id="previewModal">
+    <div class="modal modal-properties">
+      <div class="modal-header">
+        <h3 id="modalTitle">⚙ Propiedades del patrón</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body modal-body-properties">
+        <div class="properties-layout">
+          <!-- Columna izquierda: Imagen -->
+          <div class="properties-image">
+            <img id="modalImage" src="" alt="" style="width:100%; border-radius:8px;">
+          </div>
+          
+          <!-- Columna derecha: Propiedades -->
+          <div class="properties-form">
+            <h3 id="modalPatternName" style="margin-bottom:1rem;"></h3>
+            <p id="modalDesigner" style="margin-bottom:1rem; color:#666;"></p>
+            
+            <!-- Categoría -->
+            <div class="property-group">
+              <label>Categoría</label>
+              <select id="modalCategory">
+                <option value="Sweater">🧶 Sweater</option>
+                <option value="Cardigan">🧥 Cardigan</option>
+                <option value="Chal">🧣 Chal</option>
+                <option value="Shawl">🧣 Shawl</option>
+                <option value="Top">👕 Top</option>
+                <option value="Gorro">🧢 Gorro</option>
+                <option value="Hat">🧢 Hat</option>
+                <option value="Calcetines">🧦 Calcetines</option>
+                <option value="Socks">🧦 Socks</option>
+                <option value="Amigurumi">🧸 Amigurumi</option>
+                <option value="Mitones">🧤 Mitones</option>
+                <option value="Mittens">🧤 Mittens</option>
+                <option value="Bufanda">🧣 Bufanda</option>
+                <option value="Cuello">🧣 Cuello</option>
+                <option value="Cowl">🧣 Cowl</option>
+                <option value="Vestido">👗 Vestido</option>
+                <option value="Pullover">🧶 Pullover</option>
+                <option value="Jersey">🧶 Jersey</option>
+                <option value="Poncho">🧣 Poncho</option>
+                <option value="Vest">🧥 Vest</option>
+                <option value="Bordado">🪡 Bordado</option>
+                <option value="Bolso">👜 Bolso</option>
+                <option value="Otro">📄 Otro</option>
+              </select>
+            </div>
+            
+            <!-- Etiquetas -->
+            <div class="property-group">
+              <label>Etiquetas (separadas por coma)</label>
+              <input type="text" id="modalTags" placeholder="ej: verano, algodón, fácil">
+            </div>
+            
+            <!-- Observaciones -->
+            <div class="property-group">
+              <label>Observaciones</label>
+              <textarea id="modalNotes" rows="4" placeholder="Escribe aquí tus notas..."></textarea>
+            </div>
+
+            <!-- Foto -->
+            <div class="property-group">
+              <label>Foto del diseño</label>
+              <div id="photoSection">
+                <div id="photoPreview" class="photo-preview" style="display:none;">
+                  <img id="photoPreviewImg" src="" alt="Foto del diseño">
+                  <button type="button" class="btn-photo-remove" onclick="removePhoto()">✕ Quitar foto</button>
+                </div>
+                <div id="photoEmpty" class="photo-empty">
+                  <button type="button" class="btn-camera" onclick="openCamera()">📷 Sacar foto</button>
+                  <label class="btn-camera btn-camera-gallery">
+                    🖼️ Elegir de galería
+                    <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleGalleryPhoto(event)">
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cámara (oculto) -->
+            <div id="cameraContainer" class="camera-container" style="display:none;">
+              <video id="cameraVideo" autoplay playsinline></video>
+              <div class="camera-controls">
+                <button type="button" class="btn-camera btn-capture" onclick="capturePhoto()">📸 Capturar</button>
+                <button type="button" class="btn-camera btn-camera-cancel" onclick="closeCamera()">Cancelar</button>
+              </div>
+            </div>
+            <canvas id="photoCanvas" style="display:none;"></canvas>
+
+            <!-- Guardar -->
+            <div class="property-group" style="margin-top:1rem;">
+              <button type="button" class="btn-save-properties" onclick="savePatternProperties(); showSaveConfirmation();">💾 Guardar</button>
+            </div>
+
+            <!-- Borrar diseño -->
+            <div class="property-group property-delete">
+              <button type="button" class="btn-delete-pattern" onclick="deletePattern()">🗑️ Borrar este diseño</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL Favoritos -->
+  <div class="modal-overlay" id="favoritesModal">
+    <div class="modal modal-favorites">
+      <div class="modal-header">
+        <h3>❤️ Mis Favoritos</h3>
+        <button class="modal-close" onclick="closeFavoritesModal()">✕</button>
+      </div>
+      <div class="modal-body modal-body-favorites">
+        <div id="favoritesList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL Editor de Categorías -->
+  <div class="modal-overlay" id="categoryEditorModal">
+    <div class="modal modal-category-editor">
+      <div class="modal-header">
+        <h3>✏️ Editor de Categorías</h3>
+        <button class="modal-close" onclick="closeCategoryEditor()">✕</button>
+      </div>
+      <div class="modal-body modal-body-categories">
+        <!-- Lista de categorías existentes -->
+        <div class="cat-editor-section">
+          <h4>Categorías actuales</h4>
+          <div id="categoryEditorList" class="cat-editor-list">
+            <!-- Se genera dinámicamente -->
+          </div>
+        </div>
+
+        <!-- Formulario nueva/editar categoría -->
+        <div class="cat-editor-section cat-editor-form">
+          <h4 id="catFormTitle">Nueva categoría</h4>
+          <input type="hidden" id="catEditId" value="">
+          
+          <div class="cat-form-row">
+            <div class="cat-form-field">
+              <label>Nombre</label>
+              <input type="text" id="catNameInput" placeholder="ej: Pullover">
+            </div>
+          </div>
+
+          <div class="cat-form-row">
+            <div class="cat-form-field cat-icon-field">
+              <label>Icono</label>
+              <div class="cat-icon-preview" id="catIconPreview">📄</div>
+              <button type="button" class="btn-secondary btn-sm" onclick="openIconPicker()">Cambiar icono</button>
+            </div>
+          </div>
+
+          <div class="cat-form-actions">
+            <button type="button" class="btn-secondary" onclick="cancelCategoryEdit()">Cancelar</button>
+            <button type="button" class="btn-view" onclick="saveCategory()" id="catSaveBtn">Agregar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL Selector de Iconos -->
+  <div class="modal-overlay" id="iconPickerModal">
+    <div class="modal modal-icon-picker">
+      <div class="modal-header">
+        <h3>🧶 Elegir icono</h3>
+        <button class="modal-close" onclick="closeIconPicker()">✕</button>
+      </div>
+      <div class="modal-body modal-body-icons">
+        <div class="icon-picker-grid" id="iconPickerGrid">
+          <!-- Se genera dinámicamente -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="app-footer">
+    <span>v1.0.3</span>
+  </footer>
+
+  <!-- BOTON VOLVER ARRIBA -->
+  <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+
+  <script>window.__READY = false;</script>
+  <script src="firebase-config.js?t=1751490000"></script>
+  <script src="firebase-sync.js?t=1751490000"></script>
+  <script src="app.js?t=1751490000"></script>
+</body>
+</html>
