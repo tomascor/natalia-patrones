@@ -170,6 +170,21 @@ button {
   gap: 1rem;
 }
 
+/* Indicador de sync */
+.sync-status {
+  display: inline-block;
+  margin-left: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+.sync-status.saved {
+  color: #4caf50;
+}
+.sync-status.syncing {
+  color: #ff9800;
+}
+
 .btn-fav {
   display: flex;
   align-items: center;

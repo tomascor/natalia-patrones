@@ -540,6 +540,24 @@ function updateFavCount() {
   document.getElementById('favCount').textContent = state.favorites.length;
 }
 
+// --- Sync Status ---
+function updateSyncStatus(status) {
+  const el = document.getElementById('syncStatus');
+  if (!el) return;
+  if (status === 'syncing') {
+    el.textContent = '⏳ Guardando...';
+    el.className = 'sync-status syncing';
+  } else if (status === 'saved') {
+    el.textContent = '✓ Guardado';
+    el.className = 'sync-status saved';
+    setTimeout(() => { el.textContent = ''; el.className = 'sync-status'; }, 3000);
+  } else if (status === 'received') {
+    el.textContent = '📥 Sync recibido';
+    el.className = 'sync-status saved';
+    setTimeout(() => { el.textContent = ''; el.className = 'sync-status'; }, 3000);
+  }
+}
+
 function toggleFavoritesView() {
   state.showFavoritesOnly = !state.showFavoritesOnly;
   document.getElementById('btnFavorites').classList.toggle('active', state.showFavoritesOnly);
@@ -771,6 +789,8 @@ function savePatternProperties() {
   // Sincronizar con Firebase si está disponible
   if (typeof syncToFirebase === 'function') {
     syncToFirebase();
+    updateSyncStatus('syncing');
+    setTimeout(() => updateSyncStatus('saved'), 2000);
   }
 }
 

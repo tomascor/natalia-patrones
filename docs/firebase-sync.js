@@ -88,6 +88,9 @@ function startFirebaseListener(callback) {
 
     console.log('Firebase actualizado en tiempo real');
 
+    if (typeof updateSyncStatus === 'function') {
+      updateSyncStatus('received');
+    }
     if (onFirebaseUpdateCallback) {
       onFirebaseUpdateCallback();
     }
