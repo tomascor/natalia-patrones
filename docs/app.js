@@ -626,19 +626,9 @@ function openPreview(id) {
   document.getElementById('modalNotes').value = props.notes || '';
 
   // Foto
-  const photoPreview = document.getElementById('photoPreview');
-  const photoEmpty = document.getElementById('photoEmpty');
-  const photoImg = document.getElementById('photoPreviewImg');
   closeCamera();
-  if (props.photo) {
-    photoImg.src = props.photo;
-    photoPreview.style.display = 'block';
-    photoEmpty.style.display = 'none';
-  } else {
-    photoImg.src = '';
-    photoPreview.style.display = 'none';
-    photoEmpty.style.display = 'flex';
-  }
+  currentPhotos = props.photos || [];
+  renderPhotoGallery();
 
   document.getElementById('previewModal').classList.add('active');
 }
@@ -728,7 +718,15 @@ function loadPatternProperties(id) {
     const saved = localStorage.getItem('misPatrones_properties');
     const allProps = saved ? JSON.parse(saved) : {};
     const props = allProps[String(id)];
-    if (props) return props;
+    if (props) {
+      // Retrocompatibilidad:convertir photo antiguo a photos array
+      if (props.photo && !props.photos) {
+        props.photos = [props.photo];
+        delete props.photo;
+      }
+      if (!props.photos) props.photos = [];
+      return props;
+    }
   } catch {}
 
   const pattern = state.patterns.find(p => p.id === Number(id));
@@ -737,7 +735,7 @@ function loadPatternProperties(id) {
       category: pattern.category || '',
       tags: pattern.tags || '',
       notes: pattern.notes || '',
-      photo: ''
+      photos: []
     };
   }
   return {};
@@ -760,11 +758,9 @@ function savePatternProperties() {
     allProps = {};
   }
   
-  // Guardar propiedades de este patrón (incluyendo foto)
-  const photoEl = document.getElementById('photoPreviewImg');
-  const photo = (photoEl && photoEl.src && document.getElementById('photoPreview').style.display !== 'none')
-    ? photoEl.src : '';
-  allProps[id] = { category, tags, notes, photo };
+  // Guardar propiedades de este patrón (incluyendo fotos)
+  const photos = getCurrentPhotos();
+  allProps[id] = { category, tags, notes, photos };
   localStorage.setItem('misPatrones_properties', JSON.stringify(allProps));
   
   // Actualizar categoría en el estado
@@ -796,6 +792,33 @@ function showSaveConfirmation() {
 
 // ===== CÁMARA =====
 let cameraStream = null;
+let currentPhotos = [];
+
+function getCurrentPhotos() {
+  return currentPhotos.slice();
+}
+
+function renderPhotoGallery() {
+  const gallery = document.getElementById('photoGallery');
+  const empty = document.getElementById('photoEmpty');
+  if (!gallery) return;
+
+  if (currentPhotos.length === 0) {
+    gallery.innerHTML = '';
+    gallery.style.display = 'none';
+    empty.style.display = 'flex';
+    return;
+  }
+
+  gallery.style.display = 'flex';
+  empty.style.display = 'flex';
+  gallery.innerHTML = currentPhotos.map((src, i) => `
+    <div class="photo-item">
+      <img src="${src}" alt="Foto ${i + 1}">
+      <button type="button" class="btn-photo-remove" onclick="removePhoto(${i})">✕</button>
+    </div>
+  `).join('');
+}
 
 function openCamera() {
   const video = document.getElementById('cameraVideo');
@@ -838,11 +861,8 @@ function capturePhoto() {
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   const base64 = canvas.toDataURL('image/jpeg', 0.7);
-
-  document.getElementById('photoPreviewImg').src = base64;
-  document.getElementById('photoPreview').style.display = 'block';
-  document.getElementById('photoEmpty').style.display = 'none';
-
+  currentPhotos.push(base64);
+  renderPhotoGallery();
   closeCamera();
 }
 
@@ -863,10 +883,8 @@ function handleGalleryPhoto(event) {
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
       const base64 = canvas.toDataURL('image/jpeg', 0.7);
-
-      document.getElementById('photoPreviewImg').src = base64;
-      document.getElementById('photoPreview').style.display = 'block';
-      document.getElementById('photoEmpty').style.display = 'none';
+      currentPhotos.push(base64);
+      renderPhotoGallery();
     };
     img.src = e.target.result;
   };
@@ -874,10 +892,9 @@ function handleGalleryPhoto(event) {
   event.target.value = '';
 }
 
-function removePhoto() {
-  document.getElementById('photoPreviewImg').src = '';
-  document.getElementById('photoPreview').style.display = 'none';
-  document.getElementById('photoEmpty').style.display = 'flex';
+function removePhoto(index) {
+  currentPhotos.splice(index, 1);
+  renderPhotoGallery();
 }
 
 function getPatternTags(id) {
