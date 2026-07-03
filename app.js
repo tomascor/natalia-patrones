@@ -625,6 +625,21 @@ function openPreview(id) {
   // Observaciones
   document.getElementById('modalNotes').value = props.notes || '';
 
+  // Foto
+  const photoPreview = document.getElementById('photoPreview');
+  const photoEmpty = document.getElementById('photoEmpty');
+  const photoImg = document.getElementById('photoPreviewImg');
+  closeCamera();
+  if (props.photo) {
+    photoImg.src = props.photo;
+    photoPreview.style.display = 'block';
+    photoEmpty.style.display = 'none';
+  } else {
+    photoImg.src = '';
+    photoPreview.style.display = 'none';
+    photoEmpty.style.display = 'flex';
+  }
+
   document.getElementById('previewModal').classList.add('active');
 }
 
@@ -745,8 +760,11 @@ function savePatternProperties() {
     allProps = {};
   }
   
-  // Guardar propiedades de este patrón
-  allProps[id] = { category, tags, notes };
+  // Guardar propiedades de este patrón (incluyendo foto)
+  const photoEl = document.getElementById('photoPreviewImg');
+  const photo = (photoEl && photoEl.src && document.getElementById('photoPreview').style.display !== 'none')
+    ? photoEl.src : '';
+  allProps[id] = { category, tags, notes, photo };
   localStorage.setItem('misPatrones_properties', JSON.stringify(allProps));
   
   // Actualizar categoría en el estado
@@ -774,6 +792,92 @@ function showSaveConfirmation() {
     btn.textContent = original;
     btn.classList.remove('saved');
   }, 1500);
+}
+
+// ===== CÁMARA =====
+let cameraStream = null;
+
+function openCamera() {
+  const video = document.getElementById('cameraVideo');
+  const container = document.getElementById('cameraContainer');
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert('Tu navegador no soporta cámara. Prueba desde el móvil.');
+    return;
+  }
+
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 960 } }
+  }).then(function(stream) {
+    cameraStream = stream;
+    video.srcObject = stream;
+    container.style.display = 'block';
+  }).catch(function(err) {
+    alert('No se pudo acceder a la cámara: ' + err.message);
+  });
+}
+
+function closeCamera() {
+  const container = document.getElementById('cameraContainer');
+  container.style.display = 'none';
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(function(t) { t.stop(); });
+    cameraStream = null;
+  }
+}
+
+function capturePhoto() {
+  const video = document.getElementById('cameraVideo');
+  const canvas = document.getElementById('photoCanvas');
+  const maxW = 400;
+
+  canvas.width = video.videoWidth > maxW ? maxW : video.videoWidth;
+  canvas.height = canvas.width * (video.videoHeight / video.videoWidth);
+
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  const base64 = canvas.toDataURL('image/jpeg', 0.7);
+
+  document.getElementById('photoPreviewImg').src = base64;
+  document.getElementById('photoPreview').style.display = 'block';
+  document.getElementById('photoEmpty').style.display = 'none';
+
+  closeCamera();
+}
+
+function handleGalleryPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.getElementById('photoCanvas');
+      const maxW = 400;
+      canvas.width = img.width > maxW ? maxW : img.width;
+      canvas.height = canvas.width * (img.height / img.width);
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const base64 = canvas.toDataURL('image/jpeg', 0.7);
+
+      document.getElementById('photoPreviewImg').src = base64;
+      document.getElementById('photoPreview').style.display = 'block';
+      document.getElementById('photoEmpty').style.display = 'none';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function removePhoto() {
+  document.getElementById('photoPreviewImg').src = '';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('photoEmpty').style.display = 'flex';
 }
 
 function getPatternTags(id) {

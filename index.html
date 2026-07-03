@@ -205,6 +205,34 @@
               <textarea id="modalNotes" rows="4" placeholder="Escribe aquí tus notas..."></textarea>
             </div>
 
+            <!-- Foto -->
+            <div class="property-group">
+              <label>Foto del diseño</label>
+              <div id="photoSection">
+                <div id="photoPreview" class="photo-preview" style="display:none;">
+                  <img id="photoPreviewImg" src="" alt="Foto del diseño">
+                  <button type="button" class="btn-photo-remove" onclick="removePhoto()">✕ Quitar foto</button>
+                </div>
+                <div id="photoEmpty" class="photo-empty">
+                  <button type="button" class="btn-camera" onclick="openCamera()">📷 Sacar foto</button>
+                  <label class="btn-camera btn-camera-gallery">
+                    🖼️ Elegir de galería
+                    <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleGalleryPhoto(event)">
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cámara (oculto) -->
+            <div id="cameraContainer" class="camera-container" style="display:none;">
+              <video id="cameraVideo" autoplay playsinline></video>
+              <div class="camera-controls">
+                <button type="button" class="btn-camera btn-capture" onclick="capturePhoto()">📸 Capturar</button>
+                <button type="button" class="btn-camera btn-camera-cancel" onclick="closeCamera()">Cancelar</button>
+              </div>
+            </div>
+            <canvas id="photoCanvas" style="display:none;"></canvas>
+
             <!-- Guardar -->
             <div class="property-group" style="margin-top:1rem;">
               <button type="button" class="btn-save-properties" onclick="savePatternProperties(); showSaveConfirmation();">💾 Guardar</button>
