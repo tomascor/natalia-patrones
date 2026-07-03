@@ -72,7 +72,8 @@ function startFirebaseListener(callback) {
       mergedProps[id] = {
         category: fb.category || local.category || '',
         tags: fb.tags || local.tags || '',
-        notes: fb.notes || local.notes || ''
+        notes: fb.notes || local.notes || '',
+        photo: fb.photo || local.photo || ''
       };
     });
 
