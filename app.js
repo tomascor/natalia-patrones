@@ -506,6 +506,9 @@ function loadFavorites() {
 
 function saveFavorites() {
   localStorage.setItem('misPatrones_favorites', JSON.stringify(state.favorites));
+  if (typeof syncToFirebase === 'function') {
+    syncToFirebase();
+  }
 }
 
 function toggleFavorite(id) {
@@ -813,9 +816,9 @@ function renderPhotoGallery() {
   gallery.style.display = 'flex';
   empty.style.display = 'flex';
   gallery.innerHTML = currentPhotos.map((src, i) => `
-    <div class="photo-item">
+    <div class="photo-item" onclick="openPhotoLightbox(${i})" style="cursor:pointer;">
       <img src="${src}" alt="Foto ${i + 1}">
-      <button type="button" class="btn-photo-remove" onclick="removePhoto(${i})">✕</button>
+      <button type="button" class="btn-photo-remove" onclick="event.stopPropagation(); removePhoto(${i})">✕</button>
     </div>
   `).join('');
 }
@@ -895,6 +898,19 @@ function handleGalleryPhoto(event) {
 function removePhoto(index) {
   currentPhotos.splice(index, 1);
   renderPhotoGallery();
+}
+
+function openPhotoLightbox(index) {
+  const src = currentPhotos[index];
+  if (!src) return;
+  const overlay = document.getElementById('photoLightbox');
+  const img = document.getElementById('photoLightboxImg');
+  img.src = src;
+  overlay.style.display = 'flex';
+}
+
+function closePhotoLightbox() {
+  document.getElementById('photoLightbox').style.display = 'none';
 }
 
 function getPatternTags(id) {
@@ -1050,6 +1066,9 @@ function loadCustomCategories() {
 
 function saveCustomCategories(categories) {
   localStorage.setItem('misPatrones_customCategories', JSON.stringify(categories));
+  if (typeof syncToFirebase === 'function') {
+    syncToFirebase();
+  }
 }
 
 function getAllCategories() {

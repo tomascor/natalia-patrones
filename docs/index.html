@@ -327,6 +327,12 @@
   <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
 
   <script>window.__READY = false;</script>
+  <!-- Lightbox fotos -->
+  <div id="photoLightbox" class="photo-lightbox" onclick="closePhotoLightbox()" style="display:none;">
+    <img id="photoLightboxImg" src="" alt="Foto ampliada">
+    <button class="photo-lightbox-close" onclick="closePhotoLightbox()">✕</button>
+  </div>
+
   <script src="firebase-config.js?t=1751490000"></script>
   <script src="firebase-sync.js?t=1751490000"></script>
   <script src="app.js?t=1751490000"></script>
