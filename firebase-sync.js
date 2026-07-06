@@ -139,7 +139,7 @@ async function syncFromFirebase() {
       };
       });
 
-      const mergedFavs = [...new Set([...(data.favorites || []), ...localFavs])];
+    const mergedFavs = (data.favorites && data.favorites.length > 0) ? data.favorites : localFavs;
       const mergedCats = (data.customCategories && data.customCategories.length > 0) ? data.customCategories : localCats;
       const mergedDeleted = (data.deletedDefaults && data.deletedDefaults.length > 0) ? data.deletedDefaults : localDeleted;
 
